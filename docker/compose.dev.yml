@@ -1,0 +1,140 @@
+version: "3"
+
+networks:
+  backend:
+    driver: bridge
+  frontend:
+    driver: bridge
+
+## TODO
+volumes:
+  db_data: {}
+  logs_data: {}
+  packages_data: {}
+
+services:
+  # Proxy
+  nginx-proxy:
+    restart: always
+    image: jwilder/nginx-proxy
+    container_name: sinergy-nginx-proxy
+    links:
+      - api
+      - ui
+      - db
+      - docs
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ${ROOT_PATH}/data/logs/nginx/:/var/log/nginx/
+      - ${ROOT_PATH}/configuration/nginx/vhost.d/:/etc/nginx/vhost.d/
+    networks:
+     - backend
+     - frontend
+  # TODO share cross services common packages
+  # packages:
+  #   image: sinergy/packages
+  #   container_name: sinergy-packages
+  #   build: ${SERVICES_PATH}/packages
+  #   volumes:
+  #     - packages_data:/packages
+  #   networks:
+  #    - backend
+
+  # Backend
+  ## EXPRESS API
+  api:
+    image: sinergy/api
+    container_name: sinergy-api
+    restart: unless-stopped
+    depends_on:
+      - db
+    build: ${SERVICES_PATH}/api
+    command: "yarn start:dev"
+    volumes:
+      - ${SERVICES_PATH}/api/:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 4000:4000
+      - 5858:5858
+    networks:
+     - backend
+    env_file:
+      - ${SERVICES_PATH}/api/.env
+
+  ## DB
+  db:
+    image: sinergy/db
+    build: ${SERVICES_PATH}/db
+    restart: unless-stopped
+    container_name: sinergy-db
+    volumes:
+      - ${ROOT_PATH}/configuration/db/couchdb/etc:/usr/local/etc/couchdb/local.d
+      - ${ROOT_PATH}/data/db/couchdb/lib:/usr/local/var/lib/couchdb
+    ports:
+      - 5984:5984
+    networks:
+      - backend
+    environment:
+      NODE_ENV: development
+      VIRTUAL_PORT: 5984
+      VIRTUAL_HOST: db.sinergy.dev
+
+  ## bus
+  # bus:
+  #   build: ${SERVICES_PATH}/bus
+  #   container_name: bus
+  #   restart: unless-stopped
+  #   hostname: bus.sinergy.dev
+  #   ports:
+  #     - 5672:5672
+  #     - 15672::15672
+  #   networks:
+  #     - backend
+  #   environment:
+  #     NODE_ENV: development
+  #     VIRTUAL_HOST: bus.sinergy.dev
+  #     VIRTUAL_PORT: 5672
+  #     VIRTUAL_PORT: 15672
+  #   labels:
+  #     org.label-schema.group: "bus"
+  # Frontend
+  ## Dashboard
+  ui:
+    image: sinergy/ui
+    container_name: sinergy-ui
+    restart: unless-stopped
+    build: ${SERVICES_PATH}/ui
+    command: yarn start:dev
+    volumes:
+      - ${SERVICES_PATH}/ui/:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - api
+    ports:
+      - 8080:8080
+      - 8081:8081
+    networks:
+      - frontend
+    env_file:
+      - ${SERVICES_PATH}/api/.env
+
+  docs:
+    image: sinergy/docs
+    restart: unless-stopped
+    container_name: sinergy-docs
+    build: ${SERVICES_PATH}/docs
+    command: yarn start:dev
+    volumes:
+      - ${SERVICES_PATH}/docs/:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 4444:4444
+    networks:
+      - frontend
+    environment:
+      NODE_ENV: development
+      VIRTUAL_HOST: docs.sinergy.dev
+      VIRTUAL_PORT: 4444

@@ -1,0 +1,59 @@
+<link rel="import" href="/node_modules/@polymer/polymer/polymer-element.html">
+<link rel="import" href="/src/components/KmHello.html">
+<link rel="import" href="/src/stores/redux-mixin.html">
+
+<dom-module id="km-app">
+  <template>
+
+    <style>
+
+    </style>
+    <div>
+      <km-hello name="[[message]]"></km-hello>
+    </div>
+  </template>
+
+  <script>
+
+    class KmApp extends ReduxMixin(Polymer.Element) {
+      static get is() { return 'km-app' }
+
+      static get properties() {
+        return {
+          message: {
+            type: String,
+            statePath(state) {
+              return state.message
+            },
+          }
+        }
+      }
+
+      static get actions() {
+        return {
+          updateMessage(message) {
+            return {
+              type: 'UPDATE_MESSAGE',
+              message,
+            }
+          }
+        }
+      }
+
+      connectedCallback() {
+        super.connectedCallback()
+        const fetchAsync = async (url) => await (await fetch(url, {})).json()
+
+        this.dispatch( dispatch => {
+          const onResponse = (res) => {
+            dispatch('updateMessage', res.message)
+          }
+          fetchAsync('http://api.sinergy.dev/hello')
+            .then(onResponse)
+        })
+      }
+    }
+    // Register custom element class with browser
+    customElements.define(KmApp.is, KmApp);
+  </script>
+</dom-module>
