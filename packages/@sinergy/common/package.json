@@ -1,0 +1,7 @@
+{
+  "name": "@sinergy/common",
+  "version": "1.0.0",
+  "description": "Test common package",
+  "main": "index.js",
+  "license": "MIT"
+}

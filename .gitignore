@@ -1,6 +1,8 @@
 .tmp
 .cache
 __tmp
+data/logs
+data/db
 pids
 logs
 reports
