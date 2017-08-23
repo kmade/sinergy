@@ -47,12 +47,6 @@ run/api:
 		&& docker logs sinergy-api -f
 stop/api:
 	docker stop sinergy-api
-info/api:
-	@echo -e "\033[32m"
-	@echo "------------------------------------------------------------------"
-	@echo Container - sinergy-api
-	@echo IP - $(call get_IP,sinergy-api)
-	@echo "------------------------------------------------------------------"
 
 ### DB ###
 build/db:
@@ -64,12 +58,6 @@ run/db:
 		&& docker logs sinergy-db -f
 stop/db:
 	docker stop sinergy-db
-info/db:
-	@echo -e "\033[32m"
-	@echo "------------------------------------------------------------------"
-	@echo Container - sinergy-db
-	@echo IP - $(call get_IP,sinergy-db)
-	@echo "------------------------------------------------------------------"
 
 ### UI ###
 build/ui:
@@ -85,6 +73,23 @@ stop/ui:
 ### NGINX ###
 nginx/reload:
 	@docker exec sinergy-nginx-proxy nginx -s reload
+
+### INFO ###
+info:
+	@echo -e "\033[32m"
+	@echo ------------------------------------------------------------------
+	@echo sinergy-ui
+	@echo IP - $(call get_IP,sinergy-ui)
+	@echo __________________________________________________________________
+	@echo sinergy-api
+	@echo IP - $(call get_IP,sinergy-api)
+	@echo __________________________________________________________________
+	@echo sinergy-db
+	@echo IP - $(call get_IP,sinergy-db)
+	@echo __________________________________________________________________
+	@echo sinergy-bus
+	@echo IP - $(call get_IP,sinergy-bus)
+	@echo ------------------------------------------------------------------
 
 
 ### CLEAN UP ###

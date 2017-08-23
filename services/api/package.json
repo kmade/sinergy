@@ -5,7 +5,7 @@
   "main": "build/api.js",
   "module": "build/api.mjs",
   "scripts": {
-    "start:dev": "nodemon -w src -w --inspect=0.0.0.0:5858 ./src/index.js"
+    "start:dev": "nodemon -w src --inspect=0.0.0.0:5858 ./src/index.js"
   },
   "keywords": [
     "express",
