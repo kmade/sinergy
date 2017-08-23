@@ -1,0 +1,19 @@
+version: "3"
+services:
+  docs:
+    image: sinergy/docs
+    restart: unless-stopped
+    container_name: sinergy-docs
+    build: ${SERVICES_PATH}/docs
+    command: yarn start:dev
+    volumes:
+      - ${SERVICES_PATH}/docs/:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 4444:4444
+    networks:
+      - frontend
+    environment:
+      NODE_ENV: development
+      VIRTUAL_HOST: docs.sinergy.dev
+      VIRTUAL_PORT: 4444

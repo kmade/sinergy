@@ -3,13 +3,7 @@
 __tmp
 data/logs
 data/db
-pids
-logs
-reports
-node_modules
-bower_components
-dist
-coverage
+**/*/.env
 *.log
 *.sublime*
 *.node
