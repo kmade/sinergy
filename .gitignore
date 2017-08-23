@@ -3,6 +3,7 @@
 __tmp
 data/logs
 data/db
+configuration/ssl/*
 **/*/.env
 *.log
 *.sublime*
