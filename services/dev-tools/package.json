@@ -1,0 +1,32 @@
+{
+  "name": "@sinergy/dev-tools",
+  "private": true,
+  "version": "0.0.0",
+  "description": "A pluggable banking desktop application",
+  "homepage": "https://gitlab.ing.net/DevWebFE1/sINerGy/wikis/home",
+  "author": "",
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@gitlab.ing.net:2222/DevWebFE1/sINerGy.git"
+  },
+  "devDependencies": {
+    "bower": "*",
+    "chai": "3",
+    "css-to-xpath": "0",
+    "cucumber": "1",
+    "eslint": "*",
+    "icu-loader": "2",
+    "lerna": "^2.1.2",
+    "mocha": "3",
+    "tape": "*",
+    "sinon": "2",
+    "spectron": "*",
+    "wdio-mocha-framework": "0",
+    "wdio-spec-reporter": "0",
+    "webdriverio": "4"
+  },
+  "scripts": {},
+  "config": {},
+  "licenses": "See LICENSE in LICENSE"
+}

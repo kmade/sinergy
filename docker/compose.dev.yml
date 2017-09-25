@@ -8,12 +8,12 @@ networks:
       config:
         - subnet: 172.28.0.0/16
 
-
 ## TODO
+# Create local drivers for shared and persistent folders
 volumes:
   db_data: {}
   logs_data: {}
-  packages_data: {}
+  dev_configs: {}
 
 services:
   # Proxy
@@ -23,29 +23,20 @@ services:
     container_name: sinergy-nginx-proxy
     links:
       - api
-      - ui
+      - web
       - db
       - bus
     ports:
       - "80:80"
       - "443:443"
-    volumes:
+    volumes: #see @todo volumes
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ${ROOT_PATH}/data/logs/nginx/:/var/log/nginx/
       - ${ROOT_PATH}/configuration/nginx/vhost.d/:/etc/nginx/vhost.d/
     networks:
      - sinergy-net
     environment:
-      DEFAULT_HOST: ui.sinergy.dev
-  # TODO share cross services common packages
-  # packages:
-  #   image: sinergy/packages
-  #   container_name: sinergy-packages
-  #   build: ${SERVICES_PATH}/packages
-  #   volumes:
-  #     - packages_data:/packages
-  #   networks:
-  #    - backend
+      DEFAULT_HOST: web.sinergy.dev
 
   # Backend
     ## DB
@@ -61,7 +52,7 @@ services:
       - 5984:5984
     networks:
       sinergy-net:
-        #ipv4_address: 172.28.1.1
+        ipv4_address: 172.28.1.1
     env_file:
       - ${DB_SRV}/.env
 
@@ -76,13 +67,17 @@ services:
     command: "yarn start:dev"
     volumes:
       - ${API_SRV}/:/usr/src/app
+      - ${ROOT_PATH}/configuration/dev/.eslintrc.yml:/usr/src/app/.eslintrc.yml
       - /usr/src/app/node_modules
+    expose:
+      - 4000
+      - 5858
     ports:
       - 4000:4000
       - 5858:5858
     networks:
       sinergy-net:
-        #ipv4_address: 172.28.1.2
+        ipv4_address: 172.28.1.2
     env_file:
       - ${API_SRV}/.env
   ## bus
@@ -95,20 +90,20 @@ services:
       - 5000:15672
     networks:
       sinergy-net:
-        #ipv4_address: 172.28.1.3
+        ipv4_address: 172.28.1.3
     env_file:
       - ${BUS_SRV}/.env
 
   # Frontend
   ## Dashboard
-  ui:
-    image: sinergy/ui
-    container_name: sinergy-ui
+  web:
+    image: sinergy/web
+    container_name: sinergy-web
     restart: unless-stopped
-    build: ${UI_SRV}
+    build: ${WEB_SRV}
     command: yarn start:dev
     volumes:
-      - ${UI_SRV}/:/usr/src/app
+      - ${WEB_SRV}/:/usr/src/app
       - /usr/src/app/node_modules
     depends_on:
       - api
@@ -117,6 +112,6 @@ services:
       - 8081:8081
     networks:
       sinergy-net:
-        #ipv4_address: 172.28.1.4
+        ipv4_address: 172.28.1.4
     env_file:
-      - ${UI_SRV}/.env
+      - ${WEB_SRV}/.env

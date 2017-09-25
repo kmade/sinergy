@@ -5,6 +5,8 @@ data/logs
 data/db
 configuration/ssl/*
 **/*/.env
+coverage
+.nyc_output
 *.log
 *.sublime*
 *.node

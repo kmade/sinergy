@@ -1,4 +1,4 @@
-FROM kmade/harbor-polymer:latest
+FROM kmade/harbor-polymer:latest AS base
 
 EXPOSE 8081 5858
 EXPOSE 8080
@@ -10,8 +10,14 @@ RUN cd /tmp && yarn --flat --prod --non-interactive
 RUN mkdir -p /usr/src/app \
   && cp -a /tmp/node_modules /usr/src/app/
 
+#COPY --from=base /usr/src/app/bower_components .
+
 # Define working directory
 WORKDIR /usr/src/app
+
+RUN echo '{ "allow_root": true }' > $HOME/.bowerrc
+#ADD bower.json /usr/src/app/bower.json
+#RUN bower install
 ADD . /usr/src/app
 
 

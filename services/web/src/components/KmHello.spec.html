@@ -1,0 +1,23 @@
+<script src="/node_modules/webcomponentsjs/webcomponents.min.js"></script>
+<script src="/bower_components/web-component-tester/browser.js"></script>
+<link rel="import" href="/src/components/KmHello.html">
+
+<test-fixture id="basicHello">
+  <template>
+    <km-hello name="Dragosh"></km-hello>
+  </template>
+</test-fixture>
+
+<script>
+  describe('<km-hello>', () => {
+    let hello;
+    beforeEach(() => {
+      hello = fixture('basicHello')
+    })
+
+    it('is greeting with the correct name', () => {
+      const actual = hello.shadowRoot.querySelector('.name')
+      expect(actual.textContent).to.equal('Dragosh')
+    })
+  })
+</script>

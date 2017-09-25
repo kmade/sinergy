@@ -1,6 +1,102 @@
+
 #####################################################
-# Make sinergy application
+# Make the sinergy
 #####################################################
+
+MAKEFLAGS += --warn-undefined-variables
+SHELL := /bin/bash
+.SHELLFLAGS := -o pipefail -euc
+.DEFAULT_GOAL := up
+
+.PHONY: all clean test run up stop exec build nginx
+
+ROOT := $(shell pwd)
+SERVICES_PATH := ${ROOT}/services
+SINERGY_PS = `docker ps | grep 'sinergy'`
+SINERGY_PS_IDS = `docker ps -a | grep 'sinergy' | cut -f1 -d ' '`
+
+## display this help message
+help:
+	@echo -e "\033[32m"
+	@echo "Display help here"
+
+
+### Install ###
+
+install:
+	#npm install --registry https://registry.npmjs.org/ --loglevel error --progress false
+
+### INFO ###
+info:
+	@echo -e "\033[32m"
+	$(info $(ANNOUNCE_BODY))
+	@echo "sINerGy Running containers"
+	@echo "${SINERGY_PS}"
+	@echo _________________________________________________________________________
+	@echo sinergy-web
+	@echo IP - $(call get_IP,sinergy-web)
+	@echo _________________________________________________________________________
+	@echo sinergy-api
+	@echo IP - $(call get_IP,sinergy-api)
+	@echo _________________________________________________________________________
+	@echo sinergy-db
+	@echo IP - $(call get_IP,sinergy-db)
+	@echo _________________________________________________________________________
+	@echo sinergy-bus
+	@echo IP - $(call get_IP,sinergy-bus)
+	@echo _________________________________________________________________________
+
+
+up:
+	$(info $(ANNOUNCE_BODY))
+	docker-compose -f docker/compose.dev.yml up --build $(UP_ARGS:'')
+
+run:
+	docker-compose -f docker/compose.dev.yml run --rm --no-deps $(RUN_ARGS)
+
+exec:
+	docker-compose -f docker/compose.dev.yml exec --rm --no-deps $(EXEC_ARGS)
+
+test:
+	docker-compose -f docker/compose.dev.yml -f docker/compose.test.yml run --rm --no-deps $(TEST_ARGS)
+
+stop:
+	docker-compose -f docker/compose.dev.yml stop $(STOP_ARGS)
+
+### Build ###
+build:
+	docker-compose -f docker/compose.dev.yml build $(BUILD_ARGS)
+
+### NGINX ###
+nginx/reload:
+	@docker exec sinergy-nginx-proxy nginx -s reload
+
+### CLEAN UP ###
+clean/all:
+	docker system prune -a
+clean/images:
+	@docker rmi `docker images --filter "dangling=true" -q --no-trunc` -f
+clean/containers:
+	@docker rm -f `docker ps -a -q`
+
+define get_IP
+	$(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $1)
+endef
+
+define ANNOUNCE_BODY
+
+         ooooo ooooo      ooo                      .oooooo.
+         `888' `888b.     `8'                     d8P'  `Y8b
+ .oooo.o  888   8 `88b.    8   .ooooo.  oooo d8b 888           oooo    ooo
+d88(  "8  888   8   `88b.  8  d88' `88b `888""8P 888            `88.  .8'
+`"Y88b.   888   8     `88b.8  888ooo888  888     888     ooooo   `88..8'
+o.  )88b  888   8       `888  888    .o  888     `88.    .88'     `888'
+8""888P' o888o o8o        `8  `Y8bod8P' d888b     `Y8bood8P'       .8'
+                                                               .o..P'
+                                                               `Y8P'
+endef
+
+## Too much duplication here, just make it DRY ...
 # If the first argument is "run"...
 ifeq (run,$(firstword $(MAKECMDGOALS)))
   # use the rest as arguments for "run"
@@ -8,97 +104,32 @@ ifeq (run,$(firstword $(MAKECMDGOALS)))
   # ...and turn them into do-nothing targets
   $(eval $(RUN_ARGS):;@:)
 endif
-
-MAKEFLAGS += --warn-undefined-variables
-SHELL := /bin/bash
-.SHELLFLAGS := -o pipefail -euc
-.DEFAULT_GOAL := build
-
-.PHONY: all
-
-ROOT := $(shell pwd)
-SERVICES_PATH := ${ROOT}/services
-
-## display this help message
-help:
-	@echo -e "\033[32m"
-	@echo "Display help here"
-
-build:
-	@echo "Build everything"
-run:
-	@echo "Run everything"
-	docker-compose -f docker/compose.dev.yml up --build $(RUN_ARGS)
-stop:
-	@echo "Stoping sinergy"
-	docker stop $(docker ps -a | grep 'sinergy' | cut -f1 -d ' ')
-
-ps:
-	@echo "Show sinergy"
-	docker ps $(docker ps -a | grep 'sinergy' | cut -f1 -d ' ')
-
-### API ###
-build/api:
-	cd ${SERVICES_PATH}/api \
-		&& sh ./scripts/build.sh
-run/api:
-	cd ${SERVICES_PATH}/api \
-		&& sh ./scripts/run.sh \
-		&& docker logs sinergy-api -f
-stop/api:
-	docker stop sinergy-api
-
-### DB ###
-build/db:
-	cd ${SERVICES_PATH}/db \
-		&& sh ./scripts/build.sh
-run/db:
-	cd ${SERVICES_PATH}/db \
-		&& sh ./scripts/run.sh \
-		&& docker logs sinergy-db -f
-stop/db:
-	docker stop sinergy-db
-
-### UI ###
-build/ui:
-	cd ${SERVICES_PATH}/ui \
-		&& sh ./scripts/build.sh
-run/ui:
-	cd ${SERVICES_PATH}/ui \
-		&& sh ./scripts/run.sh \
-		&& docker logs sinergy-ui -f
-stop/ui:
-	docker stop sinergy-ui
-
-### NGINX ###
-nginx/reload:
-	@docker exec sinergy-nginx-proxy nginx -s reload
-
-### INFO ###
-info:
-	@echo -e "\033[32m"
-	@echo ------------------------------------------------------------------
-	@echo sinergy-ui
-	@echo IP - $(call get_IP,sinergy-ui)
-	@echo __________________________________________________________________
-	@echo sinergy-api
-	@echo IP - $(call get_IP,sinergy-api)
-	@echo __________________________________________________________________
-	@echo sinergy-db
-	@echo IP - $(call get_IP,sinergy-db)
-	@echo __________________________________________________________________
-	@echo sinergy-bus
-	@echo IP - $(call get_IP,sinergy-bus)
-	@echo ------------------------------------------------------------------
-
-
-### CLEAN UP ###
-clean/all:
-	docker system prune -a
-clean/images:
-	docker rmi $(docker images --filter "dangling=true" -q --no-trunc) -f
-
-define get_IP
-	$(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $1)
-endef
-
+ifeq (exec,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "exec"
+  EXEC_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(EXEC_ARGS):;@:)
+endif
+ifeq (test,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "test"
+  TEST_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  $(eval $(TEST_ARGS):;@:)
+endif
+ifeq (build,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "build"
+  BUILD_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(BUILD_ARGS):;@:)
+endif
+ifeq (up,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "up"
+  UP_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(UP_ARGS):;@:)
+endif
+ifeq (stop,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "up"
+  STOP_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(STOP_ARGS):;@:)
+endif

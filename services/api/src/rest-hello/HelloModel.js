@@ -18,7 +18,7 @@ const HelloModel = () => Object.assign(this, ({
  */
 HelloModel.create = ( table = 'hello' ) => {
   db = new PouchDB(`${COUCHDB_URL}/${table}`)
-  db.on('error', err => console.error('Error', err))
+  // db.on('error', err => console.error('Error', err)) // deal with error later
   return HelloModel()
 }
 

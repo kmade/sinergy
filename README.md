@@ -17,7 +17,7 @@ o.  )88b  888   8       `888  888    .o  888     `88.    .88'     `888'
 
 # sINerGy
 
-A pluggable banking desktop application based on the [Open Bank Project](https://www.openbankproject.com/) using [Electron] (https://electron.atom.io/) and [Polymer] (https://www.polymer-project.org/).
+A pluggable banking desktop application based on the [Open Bank Project][1] using [Electron][2] and [Polymer][3].
 
 ## Find out more about:
 
@@ -27,42 +27,39 @@ A pluggable banking desktop application based on the [Open Bank Project](https:/
 
 ## MicroServices
 
+### WEB - Default 
+
+- http://sinergy.dev/ -> http://localhost:8081
+
+### Desktop
+
+TBA
+
 ### API
 
-- http://api.app.dev/ -> http://localhost:4000
-
-### UI 
-
-- http://ui.app.dev/ -> http://localhost:8081
+- http://api.sinergy.dev/ -> http://localhost:4000
 
 ### DOCS 
 
-- http://docs.app.dev/ -> http://localhost:4444
+- http://docs.sinergy.dev/ -> http://localhost:4444
 
 ### DB
 
-- http://db.app.dev/ -> http://localhost:5984/_utils/fauxton/
+- http://db.sinergy.dev/ -> http://localhost:5984/_utils/fauxton/
+
+### RabitMQ 
+
+- http://bus.sinergy.dev/ -> http://localhost:5984/_utils/fauxton/
 
 
-### RabitMQ
-	
-TBA
-
-### Electron
-	
-TBA
 
 ### QA
-	
 TBA
 
 ### Monitoring
-	
 TBA
 
-
 ### Logging
-	
 TBA
 
 ## Installation
@@ -88,16 +85,32 @@ Allocate enough memory to docker: 8GB
 
 ## Usage
 
-```sh
-make run
-```
-Run individual services
+### Start
 
 ```sh
-make run api
+make
 ```
+
+### Info
+
+```sh
+make info
+```
+
+### Build
+
+```sh
+make build <service>
+```
+
+
 > For more see Makefile for more info until `make help` is complete
 
 ## &copy; an AppChemistry project.
 
 ![Link](./assets/alchemy-laboratory-granger.jpg "AppChemistry")
+
+
+[1]:https://www.openbankproject.com/
+[2]:https://electron.atom.io/
+[3]:https://www.polymer-project.org/
