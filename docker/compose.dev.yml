@@ -14,6 +14,7 @@ volumes:
   db_data: {}
   logs_data: {}
   dev_configs: {}
+  ssl_certs: {}
 
 services:
   # Proxy
@@ -32,6 +33,7 @@ services:
     volumes: #see @todo volumes
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ${ROOT_PATH}/data/logs/nginx/:/var/log/nginx/
+      - ${ROOT_PATH}/configuration/ssl/:/etc/nginx/certs/
       - ${ROOT_PATH}/configuration/nginx/vhost.d/:/etc/nginx/vhost.d/
     networks:
      - sinergy-net

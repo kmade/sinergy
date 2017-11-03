@@ -1,5 +1,6 @@
 scripts
 Dockerfile
 .vscode
-test
+__test__
+coverage
 *.log

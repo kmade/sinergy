@@ -12,9 +12,9 @@ SHELL := /bin/bash
 
 ROOT := $(shell pwd)
 SERVICES_PATH := ${ROOT}/services
-SINERGY_PS = `docker ps | grep 'sinergy'`
+SINERGY_PS = `docker-compose -f docker/compose.dev.yml ps | grep 'sinergy'`
 SINERGY_PS_IDS = `docker ps -a | grep 'sinergy' | cut -f1 -d ' '`
-
+LINE = '______________________________________________________________________________________________'
 ## display this help message
 help:
 	@echo -e "\033[32m"
@@ -28,28 +28,29 @@ install:
 
 ### INFO ###
 info:
+
 	@echo -e "\033[32m"
 	$(info $(ANNOUNCE_BODY))
 	@echo "sINerGy Running containers"
 	@echo "${SINERGY_PS}"
-	@echo _________________________________________________________________________
+	@echo $(LINE)
 	@echo sinergy-web
 	@echo IP - $(call get_IP,sinergy-web)
-	@echo _________________________________________________________________________
+	@echo $(LINE)
 	@echo sinergy-api
 	@echo IP - $(call get_IP,sinergy-api)
-	@echo _________________________________________________________________________
+	@echo $(LINE)
 	@echo sinergy-db
 	@echo IP - $(call get_IP,sinergy-db)
-	@echo _________________________________________________________________________
+	@echo $(LINE)
 	@echo sinergy-bus
 	@echo IP - $(call get_IP,sinergy-bus)
-	@echo _________________________________________________________________________
+	@echo $(LINE)
 
 
 up:
 	$(info $(ANNOUNCE_BODY))
-	docker-compose -f docker/compose.dev.yml up --build $(UP_ARGS:'')
+	docker-compose -f docker/compose.dev.yml up --build $(UP_ARGS)
 
 run:
 	docker-compose -f docker/compose.dev.yml run --rm --no-deps $(RUN_ARGS)

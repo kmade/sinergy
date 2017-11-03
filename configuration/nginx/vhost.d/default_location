@@ -13,4 +13,3 @@ if ($http_origin ~* (https?://([^/]*\.)?sinergy\.dev(:[0-9]+)?)) {
 if ($request_method = OPTIONS) {
   return 204;
 }
-

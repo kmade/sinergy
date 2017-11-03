@@ -48,7 +48,7 @@
           const onResponse = (res) => {
             dispatch('updateMessage', res.message)
           }
-          fetchAsync('http://api.sinergy.dev/hello')
+          fetchAsync('https://api.sinergy.dev/hello')
             .then(onResponse)
         })
       }
