@@ -27,9 +27,9 @@ A pluggable banking desktop application based on the [Open Bank Project][1] usin
 
 ## MicroServices
 
-### WEB - Default 
+### WEB - Default
 
-- http://sinergy.dev/ -> http://localhost:8081
+- https://web.sinergy.dev/ -> http://localhost:8081
 
 ### Desktop
 
@@ -37,17 +37,14 @@ TBA
 
 ### API
 
-- http://api.sinergy.dev/ -> http://localhost:4000
+- https://api.sinergy.dev/info -> http://localhost:4000
 
-### DOCS 
-
-- http://docs.sinergy.dev/ -> http://localhost:4444
 
 ### DB
 
-- http://db.sinergy.dev/ -> http://localhost:5984/_utils/fauxton/
+- https://db.sinergy.dev/_utils/fauxton/
 
-### RabitMQ 
+### RabitMQ
 
 - http://bus.sinergy.dev/ -> http://localhost:5984/_utils/fauxton/
 

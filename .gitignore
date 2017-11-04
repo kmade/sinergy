@@ -4,6 +4,7 @@ __tmp
 data/logs
 data/db
 configuration/ssl/*
+configuration/db/*
 **/*/.env
 coverage
 .nyc_output

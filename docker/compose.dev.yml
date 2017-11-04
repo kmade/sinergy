@@ -11,10 +11,10 @@ networks:
 ## TODO
 # Create local drivers for shared and persistent folders
 volumes:
-  db_data: {}
-  logs_data: {}
-  dev_configs: {}
-  ssl_certs: {}
+  ssl_certs:
+    driver: local
+    driver_opts:
+      mountpoint: ${ROOT_PATH}/configuration/ssl/
 
 services:
   # Proxy
@@ -33,12 +33,13 @@ services:
     volumes: #see @todo volumes
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ${ROOT_PATH}/data/logs/nginx/:/var/log/nginx/
-      - ${ROOT_PATH}/configuration/ssl/:/etc/nginx/certs/
+      - ssl_certs:/etc/nginx/certs/
       - ${ROOT_PATH}/configuration/nginx/vhost.d/:/etc/nginx/vhost.d/
+
     networks:
      - sinergy-net
     environment:
-      DEFAULT_HOST: web.sinergy.dev
+      - DEFAULT_HOST=web.sinergy.dev
 
   # Backend
     ## DB
@@ -50,8 +51,10 @@ services:
     volumes:
       - ${ROOT_PATH}/configuration/db/couchdb/etc:/usr/local/etc/couchdb/local.d
       - ${ROOT_PATH}/data/db/couchdb/lib:/usr/local/var/lib/couchdb
+      - ssl_certs:/etc/nginx/certs/
     ports:
-      - 5984:5984
+      - "6984:6984"
+      - "5984:5984"
     networks:
       sinergy-net:
         ipv4_address: 172.28.1.1
@@ -70,13 +73,14 @@ services:
     volumes:
       - ${API_SRV}/:/usr/src/app
       - ${ROOT_PATH}/configuration/dev/.eslintrc.yml:/usr/src/app/.eslintrc.yml
+      - ssl_certs:/usr/src/app/ssl/certs/
       - /usr/src/app/node_modules
     expose:
       - 4000
       - 5858
     ports:
-      - 4000:4000
-      - 5858:5858
+      - "4000:4000"
+      - "5858:5858"
     networks:
       sinergy-net:
         ipv4_address: 172.28.1.2
@@ -89,7 +93,7 @@ services:
     container_name: sinergy-bus
     restart: unless-stopped
     ports:
-      - 5000:15672
+      - "5000:15672"
     networks:
       sinergy-net:
         ipv4_address: 172.28.1.3
@@ -110,8 +114,8 @@ services:
     depends_on:
       - api
     ports:
-      - 8080:8080
-      - 8081:8081
+      - "8080:8080"
+      - "8081:8081"
     networks:
       sinergy-net:
         ipv4_address: 172.28.1.4

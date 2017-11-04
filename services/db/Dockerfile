@@ -1,2 +1,2 @@
-FROM couchdb
-EXPOSE 5984
+FROM klaemo/couchdb-ssl
+EXPOSE 6984

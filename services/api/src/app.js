@@ -6,7 +6,9 @@ const app = express()
 app.use('/hello', require('./rest-hello'))
 
 app.use('/info', (req, res) => {
-  res.json({ info })
+  res.json(Object.assign(info, {
+    node: process.versions
+  }))
 })
 
 app.use((error, req, res, next) => {
