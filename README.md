@@ -28,7 +28,12 @@ A pluggable banking desktop application based on the [Open Bank Project][1] usin
 <img src="./assets/macro-arch-diagram.png" alt="Diagram" />
 
 
-## Development
+# Development
+
+### Get started
+Download Docker app
+<https://docs.docker.com/engine/installation/>
+
 
 ## Desktop
 
@@ -59,11 +64,6 @@ TBA
 ### Monitoring & Logging
 
 
-### Get started
-Download Docker app
-<https://docs.docker.com/engine/installation/>
-
-
 ```sh
 make
 ```
@@ -83,9 +83,9 @@ make build <service>
 
 > For more see Makefile for more info until `make help` is complete
 
-## &copy; an AppChemistry project.
+### &copy; an AppChemistry project.
 
-![Link](./assets/alchemy-laboratory-granger.gif "AppChemistry")
+<img src="./assets/alchemy-laboratory-granger.gif" align="center alt="logo" />
 
 
 [1]:https://www.openbankproject.com/
