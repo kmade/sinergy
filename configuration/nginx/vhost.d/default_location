@@ -1,4 +1,4 @@
-if ($http_origin ~* (https?://([^/]*\.)?sinergy\.dev(:[0-9]+)?)) {
+if ($http_origin ~* (https?://([^/]*\.)?sinergy\.localhost(:[0-9]+)?)) {
   set $cors "true";
   add_header 'Access-Control-Allow-Origin' "$http_origin" always;
   add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, DELETE, PUT';

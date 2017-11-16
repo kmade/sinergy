@@ -3,12 +3,12 @@
 # Make the sinergy
 #####################################################
 
-MAKEFLAGS += --warn-undefined-variables
+#MAKEFLAGS += --warn-undefined-variables
 SHELL := /bin/bash
 .SHELLFLAGS := -o pipefail -euc
 .DEFAULT_GOAL := up
 
-.PHONY: all clean test run up stop exec build nginx
+.PHONY: all clean test run up stop exec build nginx logs ssl
 
 ROOT := $(shell pwd)
 SERVICES_PATH := ${ROOT}/services
@@ -34,17 +34,21 @@ info:
 	@echo "sINerGy Running containers"
 	@echo "${SINERGY_PS}"
 	@echo $(LINE)
-	@echo sinergy-web
-	@echo IP - $(call get_IP,sinergy-web)
+	@echo sinergy.web
+	@echo IP - $(call get_IP,sinergy.web)
 	@echo $(LINE)
-	@echo sinergy-api
-	@echo IP - $(call get_IP,sinergy-api)
+	@echo sinergy.api
+	@echo IP - $(call get_IP,sinergy.api)
 	@echo $(LINE)
-	@echo sinergy-db
-	@echo IP - $(call get_IP,sinergy-db)
+	@echo sinergy.db
+	@echo IP - $(call get_IP,sinergy.db)
 	@echo $(LINE)
-	@echo sinergy-bus
-	@echo IP - $(call get_IP,sinergy-bus)
+	@echo sinergy.bus
+	@echo IP - $(call get_IP,sinergy.bus)
+	@echo $(LINE)
+
+	@echo sinergy.micro-hello
+	@echo IP - $(call get_IP,sinergy.micro-hello)
 	@echo $(LINE)
 
 
@@ -56,13 +60,20 @@ run:
 	docker-compose -f docker/compose.dev.yml run --rm --no-deps $(RUN_ARGS)
 
 exec:
-	docker-compose -f docker/compose.dev.yml exec --rm --no-deps $(EXEC_ARGS)
+	docker-compose -f docker/compose.dev.yml exec $(EXEC_ARGS)
+
+logs:
+	docker-compose -f docker/compose.dev.yml logs -f $(LOGS_ARGS)
 
 test:
 	docker-compose -f docker/compose.dev.yml -f docker/compose.test.yml run --rm --no-deps $(TEST_ARGS)
 
 stop:
 	docker-compose -f docker/compose.dev.yml stop $(STOP_ARGS)
+
+ssl:
+	cd configuration/ssl/ && sh generate.sh
+
 
 ### Build ###
 build:
@@ -133,4 +144,11 @@ ifeq (stop,$(firstword $(MAKECMDGOALS)))
   STOP_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
   # ...and turn them into do-nothing targets
   $(eval $(STOP_ARGS):;@:)
+endif
+
+ifeq (logs,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "up"
+  LOGS_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(LOGS_ARGS):;@:)
 endif

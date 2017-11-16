@@ -4,6 +4,7 @@ const app = express()
 
 // modules
 app.use('/hello', require('./rest-hello'))
+app.use('/hello-grpc', require('./grpc-hello'))
 
 app.use('/info', (req, res) => {
   res.json(Object.assign(info, {

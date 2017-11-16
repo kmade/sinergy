@@ -1,6 +1,6 @@
 const PouchDB = require('pouchdb')
 const COUCHDB_URL = process.env.COUCHDB_URL
-console.log(COUCHDB_URL)
+
 let db
 
 /**
