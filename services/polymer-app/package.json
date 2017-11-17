@@ -4,8 +4,8 @@
   "main": "build/index.html",
   "flat": true,
   "scripts": {
-    "start:dev": "polymer serve -p 8081 -H 0.0.0.0",
-    "start": "polymer serve build/default -p 8000 -H 0.0.0.0",
+    "start:dev": "polymer serve -p 9081 -H 0.0.0.0",
+    "start": "polymer serve build/default -p 8081 -H 0.0.0.0",
     "build": "polymer build --bundle --js-minify --css-minify --html-minify",
     "test": "xvfb-run wct --skip-selenium-install"
   },

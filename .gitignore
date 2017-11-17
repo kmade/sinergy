@@ -8,6 +8,7 @@ configuration/db/*
 **/*/.env
 coverage
 .nyc_output
+.next
 *.log
 *.sublime*
 *.node

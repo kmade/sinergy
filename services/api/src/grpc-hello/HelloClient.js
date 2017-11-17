@@ -6,6 +6,7 @@ const root = path.join(__dirname, '../../protos')
 const file = 'hello.proto'
 const client = caller('172.28.1.100:40000', { root, file }, 'Greeter')
 
+
 /**
  *
  * @public

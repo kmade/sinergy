@@ -29,9 +29,10 @@ services:
     container_name: sinergy.nginx
     links:
       - api
-      - web
       - db
       - bus
+      - polymer-app
+      - react-app
     ports:
       - "80:80"
       - "443:443"
@@ -44,7 +45,7 @@ services:
     networks:
      - sinergy-net
     environment:
-      - DEFAULT_HOST=web.sinergy.localhost
+      - DEFAULT_HOST=react.sinergy.localhost
 
   # Backend
     ## DB
@@ -111,27 +112,52 @@ services:
     env_file:
       - ${BUS_SERVICE_PATH}/.env
 
-  # Frontend
-  ## Dashboard
-  web:
-    image: sinergy/web
-    container_name: sinergy.web
+  # UIs
+  polymer-app:
+    image: sinergy/polymer-app
+    container_name: sinergy.polymer-app
     restart: unless-stopped
-    build: ${WEB_SERVICE_PATH}
+    build:
+      context: ${APP_POLYMER_SERVICE_PATH}
     command: yarn start:dev
     volumes:
-      - ${WEB_SERVICE_PATH}/:/usr/src/app
+      - ${APP_POLYMER_SERVICE_PATH}/:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/bower_components
+    depends_on:
+      - api
+    ports:
+      - "8081:8081"
+      - "9081:9081"
+    networks:
+      sinergy-net:
+        ipv4_address: 172.28.1.4
+    env_file:
+      - ${APP_POLYMER_SERVICE_PATH}/.env
+
+  react-app:
+    image: sinergy/react-app
+    container_name: sinergy.react-app
+    restart: unless-stopped
+    build:
+      context: ${APP_REACT_SERVICE_PATH}
+      args:
+        node_version: ${NODEJS_VERSION}
+        nodemon_version: "latest"
+    command: yarn start:dev
+    volumes:
+      - ${APP_REACT_SERVICE_PATH}/:/usr/src/app
       - /usr/src/app/node_modules
     depends_on:
       - api
     ports:
       - "8080:8080"
-      - "8081:8081"
+      - "9080:9080"
     networks:
       sinergy-net:
-        ipv4_address: 172.28.1.4
+        ipv4_address: 172.28.1.5
     env_file:
-      - ${WEB_SERVICE_PATH}/.env
+      - ${APP_REACT_SERVICE_PATH}/.env
 
 
   ##################################################

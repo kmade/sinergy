@@ -1,0 +1,19 @@
+{
+  "name": "@sinergy/react-app",
+  "version": "0.1.0-pre.0",
+  "main": "./src/index.js",
+  "private": true,
+  "scripts": {
+    "start:dev": "next dev ./src -p 9080",
+    "build": "next build",
+    "export": "next export",
+    "start": "next start ./src -p 8080"
+  },
+  "dependencies": {
+    "material-ui": "^0.19.4",
+    "next": "^4.1.4",
+    "react": "^16.1.1",
+    "react-dom": "^16.1.1",
+    "react-tap-event-plugin": "^3.0.2"
+  }
+}

@@ -34,8 +34,13 @@ info:
 	@echo "sINerGy Running containers"
 	@echo "${SINERGY_PS}"
 	@echo $(LINE)
-	@echo sinergy.web
-	@echo IP - $(call get_IP,sinergy.web)
+	@echo sinergy.polymer-app
+	@echo Url: https://polymer.sinergy.localhost
+	@echo IP - $(call get_IP,sinergy.polymer-app)
+	@echo $(LINE)
+	@echo sinergy.react-app
+	@echo Url: https://react.sinergy.localhost
+	@echo IP - $(call get_IP,sinergy.react-app)
 	@echo $(LINE)
 	@echo sinergy.api
 	@echo IP - $(call get_IP,sinergy.api)

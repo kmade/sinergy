@@ -3,6 +3,13 @@ const info = require('../package.json')
 const app = express()
 
 
+const bus = require('servicebus').bus({
+  url: process.env.RABBITMQ_URL,
+  vhost: process.env.RABBITMQ_VHOST,
+})
+
+bus.subscribe('hello', event => console.log('EventBus', event))
+
 // modules
 app.use('/hello', require('./rest-hello'))
 app.use('/hello-grpc', require('./grpc-hello'))

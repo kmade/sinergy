@@ -5,8 +5,7 @@
 
   ],
   "sources": [
-    "src/**/*",
-    "assets/**/*"
+    "src/**/*"
   ],
   "extraDependencies": [
     "node_modules/webcomponentsjs/webcomponents.min.js"

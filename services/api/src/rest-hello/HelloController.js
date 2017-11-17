@@ -1,12 +1,6 @@
 const { asyncMiddleware } = require('../lib/middlewares/async')
 const model = require('./HelloModel').create()
 
-const bus = require('servicebus').bus({
-  url: process.env.RABBITMQ_URL,
-  vhost: process.env.RABBITMQ_VHOST,
-})
-
-bus.subscribe('hello', event => console.log('EventBus', event))
 /**
  *
  * @public
