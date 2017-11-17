@@ -1,2 +1,3 @@
 FROM rabbitmq:3-management
 EXPOSE 5000:15672
+EXPOSE 5672:5672

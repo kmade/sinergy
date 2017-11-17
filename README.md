@@ -34,6 +34,23 @@ A pluggable banking desktop application based on the [Open Bank Project][1] usin
 Download Docker app
 <https://docs.docker.com/engine/installation/>
 
+```sh
+make
+```
+> It might take a while first time to pull all the images
+
+### Containers info
+
+```sh
+make info
+```
+
+### Build
+
+```sh
+make build <service>
+```
+
 
 ## Desktop
 
@@ -62,24 +79,6 @@ TBA
 TBA
 
 ### Monitoring & Logging
-
-
-```sh
-make
-```
-
-### Containers info
-
-```sh
-make info
-```
-
-### Build
-
-```sh
-make build <service>
-```
-
 
 > For more see Makefile for more info until `make help` is complete
 

@@ -18,17 +18,30 @@ const kvpair = {
 const credentials = grpc.ServerCredentials.createSsl(cacert, [kvpair])
 
 
+const bus = require('servicebus').bus({
+  url: process.env.RABBITMQ_URL,
+  vhost: process.env.RABBITMQ_VHOST,
+})
+
 /**
  * Implements the SayHello RPC method.
  */
 function sayHello (ctx) {
-  ctx.res = { message: `Hello ${ctx.req.name}`}
+  // const id = ctx.req.id //get the id from request
+  const name = 'Dragosh';
+
+  bus.publish('hello', {
+    message: name
+  })
+
+  ctx.res = { name }
 }
 /**
  * Starts an RPC server that receives requests for the Greeter service at the
  * sample server port
  */
 function main () {
+
   const app = new Mali(PROTO_PATH, 'Greeter')
   app.use({ sayHello })
   app.start(HOSTPORT)

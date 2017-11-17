@@ -104,6 +104,7 @@ services:
     restart: unless-stopped
     ports:
       - "5000:15672"
+      - "5672:5672"
     networks:
       sinergy-net:
         ipv4_address: 172.28.1.3

@@ -1,5 +1,5 @@
 const express = require('express')
-const helloController = require('./HelloController')
+const hello = require('./HelloClient')
 const router = express.Router()
 
 /**
@@ -12,6 +12,6 @@ const router = express.Router()
 *         description: hello world
 */
 
-router.get('/', helloController.index)
+router.get('/', hello.index)
 
 module.exports = router

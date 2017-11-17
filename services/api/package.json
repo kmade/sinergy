@@ -21,8 +21,10 @@
     "dotenv": "^4.0.0",
     "express": "^4.13.4",
     "grpc": "^1.7.1",
+    "grpc-caller": "^0.3.0",
     "pouchdb": "6.3.4",
-    "ramda": "^0.24.1"
+    "ramda": "^0.24.1",
+    "servicebus": "^2.0.10"
   },
   "devDependencies": {
     "eslint": "4",

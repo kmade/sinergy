@@ -71,6 +71,9 @@ test:
 stop:
 	docker-compose -f docker/compose.dev.yml stop $(STOP_ARGS)
 
+restart:
+	docker-compose -f docker/compose.dev.yml restart $(RS_ARGS)
+
 ssl:
 	cd configuration/ssl/ && sh generate.sh
 
@@ -90,6 +93,8 @@ clean/images:
 	@docker rmi `docker images --filter "dangling=true" -q --no-trunc` -f
 clean/containers:
 	@docker rm -f `docker ps -a -q`
+clean/volumes:
+	@docker volume rm $(docker volume ls -f dangling=true -q)
 
 define get_IP
 	$(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $1)
@@ -144,6 +149,13 @@ ifeq (stop,$(firstword $(MAKECMDGOALS)))
   STOP_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
   # ...and turn them into do-nothing targets
   $(eval $(STOP_ARGS):;@:)
+endif
+
+ifeq (restart,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "up"
+  RS_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(RS_ARGS):;@:)
 endif
 
 ifeq (logs,$(firstword $(MAKECMDGOALS)))
