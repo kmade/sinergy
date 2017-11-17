@@ -80,8 +80,7 @@ restart:
 	docker-compose -f docker/compose.dev.yml restart $(RS_ARGS)
 
 ssl:
-	cd configuration/ssl/ && sh generate.sh
-
+	sh scripts/generate.sh
 
 ### Build ###
 build:
