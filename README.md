@@ -54,32 +54,48 @@ make build <service>
 
 ## Desktop
 
-TBA
+### Polytron
+@see Polytron microservice
 
 ## CLI
-
 TBA
 
 ## MicroServices
 
-### WEB - Default
-- https://web.sinergy.localhost -> http://localhost:8081
+### Polytron
+UI Polymer Web/Desktop application
+- https://polytron.sinergy.localhost -> http://localhost:9081
+
+### Reactron
+UI ReactJS Web/Desktop application
+- https://reactron.sinergy.localhost -> http://localhost:9080
 
 ### API
+API gateway - NodeJS 
 - https://api.sinergy.localhost -> http://localhost:4000
 
 ### DB
+CouchDB server
 - https://db.sinergy.localhost/_utils/fauxton/
 
-### RabitMQ
-- http://bus.sinergy.localhost/
+### BUS
+RabitMQ - Message queue broker
+- https://bus.sinergy.localhost/
 
+### Micro-hello
+gRPC NodeJS demo service
+- https://micro-hello.sinergy.localhost/
+
+### Docs
+TBA
 
 ### QA
 TBA
 
 ### Monitoring & Logging
+TBA
 
+---
 > For more see Makefile for more info until `make help` is complete
 
 ### &copy; an AppChemistry project.

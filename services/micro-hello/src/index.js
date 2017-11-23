@@ -28,7 +28,7 @@ const bus = require('servicebus').bus({
  */
 function sayHello (ctx) {
   // const id = ctx.req.id //get the id from request
-  const name = 'Dragosh';
+  const name = 'Sinergy - gRPC';
 
   bus.publish('hello', {
     message: name
@@ -49,3 +49,4 @@ function main () {
 }
 
 main()
+

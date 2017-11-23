@@ -31,8 +31,8 @@ services:
       - api
       - db
       - bus
-      - polymer-app
-      - react-app
+      - polytron
+      - reactron
     ports:
       - "80:80"
       - "443:443"
@@ -113,9 +113,9 @@ services:
       - ${BUS_SERVICE_PATH}/.env
 
   # UIs
-  polymer-app:
-    image: sinergy/polymer-app
-    container_name: sinergy.polymer-app
+  polytron:
+    image: sinergy/polytron
+    container_name: sinergy.polytron
     restart: unless-stopped
     build:
       context: ${APP_POLYMER_SERVICE_PATH}
@@ -135,9 +135,9 @@ services:
     env_file:
       - ${APP_POLYMER_SERVICE_PATH}/.env
 
-  react-app:
-    image: sinergy/react-app
-    container_name: sinergy.react-app
+  reactron:
+    image: sinergy/reactron
+    container_name: sinergy.reactron
     restart: unless-stopped
     build:
       context: ${APP_REACT_SERVICE_PATH}

@@ -1,0 +1,39 @@
+{
+  "name": "@sinergy/reactron",
+  "productName": "Sinergy",
+  "author": "|{ustomM@de",
+  "description": "Desktop Sinergy AppStore",
+  "private": true,
+  "version": "0.1.0-pre.0",
+  "main": "./src/electron/app.js",
+  "main:electron": "src/electron/app.js",
+  "scripts": {
+    "start:electron": "electron .",
+    "start:dev": "next dev ./src -p 9080",
+    "build": "next build src && next export src",
+    "export": "next export",
+    "start": "next start ./src -p 8080",
+    "build:electron": "npm run clean && npm run build && npm run build:icons && npm run build:mac && npm run pack:dmg",
+    "build:icons": "electron-icon-maker --input=./assets/logo.png --output=./assets/icons",
+    "build:mac": "electron-packager . --overwrite --asar --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=dist",
+    "pack:dmg": "electron-installer-dmg dist/Sinergy-darwin-x64/Sinergy.app Sinergy --out=dist",
+    "clean": "rm -rf dist build src/out"
+  },
+  "devDependencies": {
+    "electron": "^1.8.2-beta.2",
+    "electron-icon-maker": "0.0.4",
+    "electron-installer-dmg": "^0.2.1",
+    "electron-packager": "^9.1.0",
+    "electron-next": "3.1.1"
+  },
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "material-ui": "^1.0.0-beta.21",
+    "material-ui-icons": "^1.0.0-beta.17",
+    "next": "^4.1.4",
+    "react": "^16.1.1",
+    "react-dom": "^16.1.1",
+    "react-tap-event-plugin": "^3.0.2",
+    "styled-components": "^2.2.3"
+  }
+}
