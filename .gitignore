@@ -6,6 +6,7 @@ data/db
 configuration/ssl/*
 configuration/db/*
 coverage
+dist
 .nyc_output
 .next
 bower_components
