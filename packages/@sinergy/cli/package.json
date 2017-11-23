@@ -1,13 +1,21 @@
 {
   "name": "@sinergy/cli",
-  "version": "0.0.0-alpha.0",
+  "version": "0.1.0-pre.0",
   "preferGlobal": true,
+  "main": "src/commands/index.js",
   "bin": {
-    "sinergy": "./bin/sinergy"
+    "sing": "index.js"
   },
-  "scripts": {},
+  "scripts": {
+    "pack": "pkg package.json --output dist/sing  --target node9-macos-x64"
+  },
   "dependencies": {
-    "getopts": "^2.0.0",
-    "semver": "^5.4.1"
+    "cliss": "0.0.5",
+    "magicli": "0.0.8",
+    "semver": "^5.4.1",
+    "shelljs": "^0.7.8"
+  },
+  "devDependencies": {
+    "pkg": "^4.3.0-beta.1"
   }
 }

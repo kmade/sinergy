@@ -1,62 +1,72 @@
-import Head from 'next/head'
-import React from 'react'
-import injectTapEventPlugin from 'react-tap-event-plugin'
-import info from '../electron'
+/* eslint-disable flowtype/require-valid-file-annotation */
 
-info()
-
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
-import { purple, green } from 'material-ui/colors';
-import { withTheme } from 'material-ui/styles'
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import AppBar from 'material-ui/AppBar';
-import Toolbar from 'material-ui/Toolbar';
+import Button from 'material-ui/Button';
+import Dialog, {
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from 'material-ui/Dialog';
 import Typography from 'material-ui/Typography';
+import { withStyles } from 'material-ui/styles';
+import withRoot from '../components/withRoot';
 
-
-try { injectTapEventPlugin(); } catch (e) {  }
-
-const theme = createMuiTheme({
-  palette: {
-    primary: purple,
-    secondary: green,
+const styles = {
+  root: {
+    textAlign: 'center',
+    paddingTop: 200,
   },
-  status: {
-    danger: 'orange',
-  }
-});
+};
 
+class Index extends Component {
+  state = {
+    open: false,
+  };
 
+  handleRequestClose = () => {
+    this.setState({
+      open: false,
+    });
+  };
 
-class SinergyApp extends React.Component {
-  constructor() {
-    super();
-    this.state = { isFullscreen: false };
-  }
+  handleClick = () => {
+    this.setState({
+      open: true,
+    });
+  };
 
-  static async getInitialProps({ req }) {
-    return { name: 'Dragosh' }
-  }
   render() {
     return (
-      <MuiThemeProvider theme={theme}>
-        <div>
-          <Head>
-            <title>Sinergy</title>
-            <meta name='viewport' content='initial-scale=1.0, width=device-width'/>
-          </Head>
-          <AppBar position="static" color="default">
-            <Toolbar>
-              <Typography type="title" color="inherit">
-                Title
-              </Typography>
-            </Toolbar>
-          </AppBar>
-
-        </div>
-      </MuiThemeProvider>
-    )
+      <div className={this.props.classes.root}>
+        <Dialog open={this.state.open} onRequestClose={this.handleRequestClose}>
+          <DialogTitle>Super Secret Password</DialogTitle>
+          <DialogContent>
+            <DialogContentText>1-2-3-4-5</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button color="primary" onClick={this.handleRequestClose}>
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Typography type="display1" gutterBottom>
+          Material-UI
+        </Typography>
+        <Typography type="subheading" gutterBottom>
+          example project
+        </Typography>
+        <Button raised color="accent" onClick={this.handleClick}>
+          Super Secret Password
+        </Button>
+      </div>
+    );
   }
 }
 
-export default withTheme()(SinergyApp);
+Index.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+export default withRoot(withStyles(styles)(Index));

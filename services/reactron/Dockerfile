@@ -6,7 +6,7 @@ EXPOSE 8080 9080
 
 # Provides cached layer for node_modules
 ADD package.json /tmp/package.json
-RUN cd /tmp && yarn --prod --non-interactive
+RUN cd /tmp && npm install --production --loglevel error
 
 RUN mkdir -p /usr/src/app \
   && cp -a /tmp/node_modules /usr/src/app/
