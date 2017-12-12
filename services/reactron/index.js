@@ -16,7 +16,7 @@ const createWindow = async () => {
   await prepareNext('./src', port)
 
   let appUrl = format({
-    pathname: path.join(__dirname, '../out/start/index.html'),
+    pathname: path.join(__dirname, 'src/out/start/index.html'),
     protocol: 'file:',
     slashes: true
   })
@@ -26,12 +26,17 @@ const createWindow = async () => {
   }
   mainWindow = new BrowserWindow(options)
   if(isDev) {
-    mainWindow.setSize(1624, 1024)
+
     appUrl = `http://localhost:${port}/start`
   }
-
   mainWindow.loadURL(appUrl)
-  mainWindow.webContents.openDevTools()
+
+  if(isDev) {
+    require('electron-reload')(path.resolve(__dirname), {
+      electron: path.resolve(__dirname, 'node_modules', '.bin', 'electron')
+    })
+    win.webContents.openDevTools()
+  }
   mainWindow.on('closed', () => mainWindow = null)
 }
 

@@ -74,12 +74,14 @@ services:
     restart: unless-stopped
     depends_on:
       - db
+      - bus
+      - micro-hello
     build:
       context: ${API_SERVICE_PATH}
       args:
         node_version: ${NODEJS_VERSION}
         nodemon_version: "latest"
-    command: "yarn start:dev"
+    command: bash -c "while ! curl -fs bus:15672 > /dev/null; do echo waiting for bus; sleep 3; done; yarn start:dev;"
     volumes:
       - ${API_SERVICE_PATH}/:/usr/src/app
       - ${ROOT_PATH}/configuration/dev/.eslintrc.yml:/usr/src/app/.eslintrc.yml
@@ -106,6 +108,11 @@ services:
     ports:
       - "5000:15672"
       - "5672:5672"
+    # healthcheck:
+    #   test: ["CMD", "curl", "-fs", "http://localhost"]
+    #   interval: 1m30s
+    #   timeout: 10s
+    #   retries: 3
     networks:
       sinergy-net:
         ipv4_address: 172.28.1.3
@@ -167,12 +174,14 @@ services:
     image: sinergy/micro-hello
     container_name: sinergy.micro-hello
     restart: unless-stopped
+    depends_on:
+      - bus
     build:
       context: ${MICRO_HELLO_SERVICE_PATH}
       args:
         node_version: ${NODEJS_VERSION}
         nodemon_version: "latest"
-    command: "yarn start:dev"
+    command: bash -c "while ! curl -fs bus:15672 > /dev/null; do echo waiting for bus; sleep 3; done; yarn start:dev;"
     volumes:
       - ${MICRO_HELLO_SERVICE_PATH}/:/usr/src/app
       - ${ROOT_PATH}/configuration/dev/.eslintrc.yml:/usr/src/app/.eslintrc.yml

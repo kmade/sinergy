@@ -3,11 +3,11 @@
   "version": "0.1.0-pre.0",
   "productName": "sINerGy",
   "author": "|{ustomM@de",
-  "main": "src/electron/app.js",
+  "main": "index.js",
   "flat": true,
   "scripts": {
-    "postinstall": "electron-rebuild",
-    "start:electron": "npm install && bower i -s && electron .",
+    "postinstall": "bower i -s && electron-rebuild",
+    "start:electron": "npm install && electron .",
     "start:dev": "polymer serve -p 9081 -H 0.0.0.0",
     "start": "polymer serve build/default -p 8081 -H 0.0.0.0",
     "build:electron": "npm run clean && npm run build:icons && npm run build:mac && npm run pack:dmg",
@@ -23,9 +23,14 @@
     "@webcomponents/webcomponentsjs": "1.0.0",
     "bcrypt": "^1.0.3",
     "dotenv": "^4.0.0",
+    "electron-window-state": "^4.1.1",
     "polymer-redux": "^1.0.1",
+    "pouchdb": "^6.3.4",
+    "ramda": "^0.25.0",
     "redux": "^3.7.2",
-    "redux-thunk": "^2.2.0"
+    "redux-thunk": "^2.2.0",
+    "socket.io-client": "^2.0.4",
+    "winston": "^2.4.0"
   },
   "devDependencies": {
     "bower": "^1.8.2",

@@ -43,7 +43,7 @@ class Index extends Component {
         <Dialog open={this.state.open} onRequestClose={this.handleRequestClose}>
           <DialogTitle>Super Secret Password</DialogTitle>
           <DialogContent>
-            <DialogContentText>1-2-3-4-5</DialogContentText>
+            <DialogContentText>Hello World!</DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button color="primary" onClick={this.handleRequestClose}>

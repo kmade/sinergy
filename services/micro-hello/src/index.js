@@ -4,6 +4,7 @@ const path = require('path')
 const Mali = require('mali')
 const grpc = require('grpc')
 const fs = require('fs')
+
 const HOSTPORT = `0.0.0.0:${process.env.PORT}`;
 const PROTO_PATH = path.resolve(__dirname, '../protos/hello.proto')
 const app = new Mali(PROTO_PATH, 'Greeter')
@@ -27,9 +28,9 @@ const bus = require('servicebus').bus({
  * Implements the SayHello RPC method.
  */
 function sayHello (ctx) {
-  // const id = ctx.req.id //get the id from request
-  const name = 'Sinergy - gRPC';
 
+  // const id = ctx.req.id //get the id from request
+  const name = 'Sinergy';
   bus.publish('hello', {
     message: name
   })

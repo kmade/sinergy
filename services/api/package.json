@@ -2,10 +2,9 @@
   "name": "@sinergy/api",
   "version": "0.0.1-alpha.0",
   "description": "NodeJS API microservice using express",
-  "main": "build/api.js",
-  "module": "build/api.mjs",
+  "main": "src/app.js",
   "scripts": {
-    "start:dev": "nodemon -w src --inspect=0.0.0.0:5858 ./src/index.js",
+    "start:dev": "nodemon -w src --inspect=0.0.0.0:5858 ./bin/server.js",
     "test": "npm run test:lint && npm run test:unit && npm run test:e2e",
     "test:lint": "eslint src",
     "test:unit": "tap src/**/__test__/*.test.js --coverage --100",
@@ -24,7 +23,8 @@
     "grpc-caller": "^0.3.0",
     "pouchdb": "6.3.4",
     "ramda": "^0.24.1",
-    "servicebus": "^2.0.10"
+    "servicebus": "^2.0.10",
+    "socket.io": "^2.0.4"
   },
   "devDependencies": {
     "eslint": "4",

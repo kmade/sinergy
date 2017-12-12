@@ -2,7 +2,10 @@
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
 
-module.exports = () => {
-  console.log(process.versions);
-}
+module.exports = (config) => {
 
+
+  return {
+    NativeImpl: {}
+  }
+}

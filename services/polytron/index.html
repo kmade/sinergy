@@ -3,25 +3,23 @@
   <head>
     <meta charset="UTF-8">
     <title>Sinergy</title>
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <base href="./">
     <link rel="icon" href="src/static/favicon.ico">
-    <link rel="import" href="src/sinergy-app.html">
+    <script src="./node_modules/socket.io-client/dist/socket.io.slim.js"></script>
+    <script src="./node_modules/pouchdb/dist/pouchdb.min.js"></script>
+    <script src="./node_modules/ramda/dist/ramda.min.js"></script>
+    <script src="./src/app.js"></script>
+    <link rel="import" href="src/app.html">
+    <link rel="stylesheet" href="src/static/styles/main.css">
     <style>
-      body {
-        margin: 0;
-        font-family: 'Roboto', 'Noto', sans-serif;
-        line-height: 1.5;
-        min-height: 100vh;
-        background: #eeeeee url('src/static/logo.png') 99% 99% no-repeat;
-        background-size: 32px;
-      }
+
     </style>
   </head>
   <body unresolved>
-    <sinergy-app></sinergy-app>
+    <app-sinergy class="flex-container"></app-sinergy>
+    <footer>
+      <div id="ing-logo">Powered by</div>
+    </footer>
   </body>
-  <script>
-    window.require && require('./src/electron')()
-  </script>
 </html>

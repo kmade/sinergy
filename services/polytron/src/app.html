@@ -1,0 +1,119 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="./stores/redux-mixin.html">
+
+
+<dom-module id="app-sinergy">
+  <template>
+    <style>
+      :host {
+
+      }
+      #loader{
+        background: transparent url('./static/images/logo.png') no-repeat center center;
+        background-size: 60px;
+        margin: 15rem auto;
+        width: 100px;
+        height: 100px;
+        display: flex;
+        justify-content: center;
+        align-self: flex-end;        /* for single line flex container */
+        align-content: center;
+      }
+      .rotate {
+        animation: leaves 1s ease-in-out infinite alternate;
+      }
+      .fade-in {
+        animation: fadein 1s;
+      }
+      @keyframes leaves {
+          0% {
+              transform: scale(.5);
+
+          }
+          100% {
+              transform: scale(1);
+          }
+      }
+      input{
+        font-size: 3vh;
+        position: absolute;
+        background-clip: text;
+        top: 10rem;
+        color: #fff;
+        border: none;
+        background: transparent;
+        text-align: center;
+      }
+      @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+      @keyframes fadein {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+      }
+    </style>
+    <input id="message" value$="[[message]]"></h1>
+    <div id="loader"></div>
+  </template>
+
+  <script>
+    (({ api, log, electron, db, socket } = Sinergy ) => {
+      class App extends ReduxMixin(Polymer.Element) {
+        static get is() { return 'app-sinergy' }
+        static get observers() {}
+        static get properties() {
+          return {
+            message: {
+              type: String,
+              statePath(state) {
+                return state.message
+              },
+            }
+          }
+        }
+
+        static get actions() {
+          return {
+            updateMessage(message) {
+              return {
+                type: 'UPDATE_MESSAGE',
+                message,
+              }
+            },
+          }
+        }
+
+        connectedCallback() {
+
+          super.connectedCallback()
+          this.$.loader.classList.add('rotate')
+          this.dispatch( dispatch => {
+            api(`/hello-grpc`).then( res => {
+              dispatch('updateMessage', res.message)
+              return res.message
+            }).then(message => {
+              this.$.loader.classList.remove('rotate')
+              this.$.message.classList.add('fade-in')
+            }).catch(err => log.error(err))
+
+          })
+
+          this.$.message.addEventListener('blur', this._updateMessage)
+        }
+
+        _updateMessage(event) {
+          log.debug(`Update ${event.target.value}`)
+          db.put({
+            _id: 'f5bc03fcbb99bba517c7f82f6f0015a6',
+            _rev: '11-1fb4d83e3543cdbd0440ac0f456904f0',
+            name: event.target.value,
+          }).catch(err => log.error(err))
+        }
+
+        ready() {
+          super.ready()
+          socket.on('hello', data => log.info(`Socket reviced from  ${data.name}`, data))
+        }
+      }
+     customElements.define(App.is, App)
+  })(window.Sinergy)
+  </script>
+</dom-module>

@@ -8,7 +8,6 @@ EXPOSE 5859
 
 RUN echo "Installing nodemon@$nodemon_version"
 RUN npm i -g nodemon@$nodemon_version --loglevel error
-
 RUN mkdir -p /usr/src/app
 
 # fake central dependency links, so that the links have a connecting central link across containers
@@ -16,7 +15,7 @@ RUN mkdir -p /usr/src/app
 # RUN mkdir -p /usr/lib/node_modules/@sinergy && ln -s /packages/@sinergy /usr/lib/node_modules/@sinergy
 # Provides cached layer for node_modules
 ADD package.json /tmp/package.json
-RUN cd /tmp && yarn
+RUN cd /tmp && npm install --loglevel error
 RUN cp -a /tmp/node_modules /usr/src/app/
 
 # Define working directory

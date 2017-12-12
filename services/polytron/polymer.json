@@ -1,6 +1,7 @@
 {
   "entrypoint": "index.html",
-  "shell": "src/main.html",
+  "shell": "src/app.html",
+
   "fragments": [],
   "sources": [
     "src/**/*"

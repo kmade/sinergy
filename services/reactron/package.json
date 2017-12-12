@@ -5,8 +5,7 @@
   "description": "Desktop Sinergy AppStore",
   "private": true,
   "version": "0.1.0-pre.0",
-  "main": "./src/electron/app.js",
-  "main:electron": "src/electron/app.js",
+  "main": "./electron/app.js",
   "scripts": {
     "start:electron": "electron .",
     "start:dev": "next dev ./src -p 9080",
@@ -20,12 +19,12 @@
     "clean": "rm -rf dist build src/out"
   },
   "devDependencies": {
+    "babel-plugin-transform-object-assign": "^6.22.0",
     "electron": "^1.8.2-beta.2",
     "electron-icon-maker": "0.0.4",
     "electron-installer-dmg": "^0.2.1",
     "electron-next": "3.1.1",
-    "electron-packager": "^9.1.0",
-    "babel-plugin-transform-object-assign": "^6.22.0"
+    "electron-packager": "^9.1.0"
   },
   "dependencies": {
     "dotenv": "^4.0.0",

@@ -34,13 +34,13 @@ info:
 	@echo "sINerGy Running containers"
 	@echo "${SINERGY_PS}"
 	@echo $(LINE)
-	@echo sinergy.polymer-app
+	@echo sinergy.polytron
 	@echo Url: https://polymer.sinergy.localhost
-	@echo IP - $(call get_IP,sinergy.polymer-app)
+	@echo IP - $(call get_IP,sinergy.polytron)
 	@echo $(LINE)
-	@echo sinergy.react-app
+	@echo sinergy.reactron
 	@echo Url: https://react.sinergy.localhost
-	@echo IP - $(call get_IP,sinergy.react-app)
+	@echo IP - $(call get_IP,sinergy.reactron)
 	@echo $(LINE)
 	@echo sinergy.api
 	@echo IP - $(call get_IP,sinergy.api)
@@ -78,10 +78,6 @@ stop:
 
 restart:
 	docker-compose -f docker/compose.dev.yml restart $(RS_ARGS)
-
-ssl:
-	sh scripts/generate.sh
-
 ### Build ###
 build:
 	docker-compose -f docker/compose.dev.yml build $(BUILD_ARGS)
@@ -89,6 +85,7 @@ build:
 ### NGINX ###
 nginx/reload:
 	@docker exec sinergy-nginx-proxy nginx -s reload
+
 
 ### CLEAN UP ###
 clean/all:
@@ -100,6 +97,11 @@ clean/containers:
 clean/volumes:
 	@docker volume rm $(docker volume ls -f dangling=true -q)
 
+### Custom ###
+ssl:
+	sh scripts/generate.sh
+start/polytron:
+	sh scripts/polytron.sh
 define get_IP
 	$(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $1)
 endef

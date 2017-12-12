@@ -5,7 +5,10 @@ module.exports = {
   // assetPrefix: isProd ? 'https://cdn.mydomain.com' : ''
   webpack: (config, { buildId, dev }) => {
     // Perform customizations to webpack config
-
+    config.externals = Object.assign({}, config.externals, {
+      'electron': 'electron',
+      'shelljs': 'shelljs',
+    })
     // Important: return the modified config
     return config
   },

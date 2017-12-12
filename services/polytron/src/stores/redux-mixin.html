@@ -3,7 +3,7 @@
 <link rel="import" href="../../node_modules/polymer-redux/dist/polymer-redux.html">
 <script>
 // Setup a Redux store
-(function(window, undefined) {
+(Sinergy => {
 
   const initial = {
     user: null,
@@ -23,5 +23,5 @@
   const store = Redux.createStore(reducer, initial, Redux.applyMiddleware(window.ReduxThunk.default))
   // Export the ReduxMixin
   ReduxMixin = PolymerRedux(store)
-})(window)
+})(window.Sinergy)
 </script>
