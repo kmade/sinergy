@@ -1,7 +1,9 @@
 {
   "name": "@sinergy/cli",
-  "version": "0.1.0-pre.0",
+  "version": "0.0.1-alpha.0",
   "preferGlobal": true,
+  "private": true,
+  "author": "|{ustomM@de",
   "main": "src/commands/index.js",
   "bin": {
     "sing": "index.js"

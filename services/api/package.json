@@ -1,6 +1,7 @@
 {
   "name": "@sinergy/api",
   "version": "0.0.1-alpha.0",
+  "author": "|{ustomM@de",
   "description": "NodeJS API Gateway /w express",
   "main": "src/app.js",
   "scripts": {
