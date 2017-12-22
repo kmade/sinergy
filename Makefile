@@ -105,8 +105,8 @@ clean/volumes:
 ### Custom ###
 ssl:
 	sh scripts/generate.sh
-start/polytron:
-	sh scripts/polytron.sh
+start/desktop:
+	sh scripts/start-desktop.sh $(APP_ARGS)
 define get_IP
 	$(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $1)
 endef
@@ -174,4 +174,10 @@ ifeq (logs,$(firstword $(MAKECMDGOALS)))
   LOGS_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
   # ...and turn them into do-nothing targets
   $(eval $(LOGS_ARGS):;@:)
+endif
+ifeq (start/desktop,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "run"
+  APP_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(APP_ARGS):;@:)
 endif
