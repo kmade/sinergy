@@ -1,4 +1,4 @@
-version: "3"
+version: "3.3"
 
 networks:
   network:
@@ -63,9 +63,10 @@ services:
       - api
     build:
       context: ${APP_POLYTRON_PATH}
-    command: yarn start:dev
+    command: ["sh", "scripts/wait-for.sh", "api:3000/status", "yarn", "start:dev"]
     volumes:
       - ${APP_POLYTRON_PATH}/:/usr/src/app
+      - ${ROOT_PATH}/scripts/:/usr/src/app/scripts/
       - /usr/src/app/node_modules
       - /usr/src/app/bower_components
     ports:
@@ -90,9 +91,10 @@ services:
       context: ${APP_REACTRON_PATH}
       args:
         node_version: ${NODEJS_VERSION}
-    command: yarn start:dev
+    command: ["sh", "scripts/wait-for.sh", "api:3000/status", "yarn", "start:dev"]
     volumes:
       - ${APP_REACTRON_PATH}/:/usr/src/app
+      - ${ROOT_PATH}/scripts/:/usr/src/app/scripts/
       - /usr/src/app/node_modules
     ports:
       - "${APP_REACTRON_VPORT}"
@@ -114,10 +116,16 @@ services:
     build: ${DB_PATH}
     restart: unless-stopped
     container_name: ${COMPOSE_PROJECT_NAME}.db
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost", "echo OK"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
     volumes:
       - ${ROOT_PATH}/configuration/db/couchdb/etc:/usr/local/etc/couchdb/local.d
       - ${ROOT_PATH}/data/db/couchdb/lib:/usr/local/var/lib/couchdb
       - ${ROOT_PATH}/configuration/ssl/:/etc/nginx/certs/
+      - ${ROOT_PATH}/scripts/:/usr/src/app/scripts/
     ports:
       - "${DB_VPORT}:6984"
     networks:
@@ -138,11 +146,11 @@ services:
     restart: unless-stopped
     ports:
       - "${BUS_VPORT}:15672"
-    # healthcheck:
-    #   test: ["CMD", "curl", "-fs", "http://localhost"]
-    #   interval: 1m30s
-    #   timeout: 10s
-    #   retries: 3
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost", "echo OK"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
     networks:
       - network
     env_file:
@@ -166,12 +174,13 @@ services:
       args:
         node_version: ${NODEJS_VERSION}
         nodemon_version: "latest"
-    command: bash -c "while ! curl -fs bus:15672 > /dev/null; do echo waiting for bus; sleep 3; done; yarn start:dev;"
+    command: ["sh", "scripts/wait-for.sh", "bus:15672", "yarn", "start:dev"]
     volumes:
       - ${API_PATH}/:/usr/src/app
       - ${ROOT_PATH}/configuration/dev/.eslintrc.yml:/usr/src/app/.eslintrc.yml
       - ${ROOT_PATH}/configuration/ssl/:/usr/src/app/ssl/
       - ${ROOT_PATH}/configuration/protos/:/usr/src/app/protos/
+      - ${ROOT_PATH}/scripts/:/usr/src/app/scripts/
       - /usr/src/app/node_modules
     expose:
       - ${API_VPORT}
@@ -203,12 +212,13 @@ services:
       args:
         node_version: ${NODEJS_VERSION}
         nodemon_version: "latest"
-    command: bash -c "while ! curl -fs bus:15672 > /dev/null; do echo waiting for bus; sleep 3; done; yarn start:dev;"
+    command: ["sh", "scripts/wait-for.sh", "bus:15672", "yarn", "start:dev"]
     volumes:
       - ${SERVICE_GRPC_PATH}/:/usr/src/app
       - ${ROOT_PATH}/configuration/dev/.eslintrc.yml:/usr/src/app/.eslintrc.yml
       - ${ROOT_PATH}/configuration/ssl/:/usr/src/app/ssl/
       - ${ROOT_PATH}/configuration/protos/:/usr/src/app/protos/
+      - ${ROOT_PATH}/scripts/:/usr/src/app/scripts/
       - /usr/src/app/node_modules
     networks:
       - network
@@ -228,12 +238,13 @@ services:
       args:
         node_version: ${NODEJS_VERSION}
         nodemon_version: "latest"
-    command: bash -c "while ! curl -fs bus:15672 > /dev/null; do echo waiting for bus; sleep 3; done; yarn start:dev;"
+    command: ["sh", "scripts/wait-for.sh", "bus:15672", "yarn", "start:dev"]
     volumes:
       - ${SERVICE_HTTP_PATH}/:/usr/src/app
       - ${ROOT_PATH}/configuration/dev/.eslintrc.yml:/usr/src/app/.eslintrc.yml
       - ${ROOT_PATH}/configuration/ssl/:/usr/src/app/ssl/
       - ${ROOT_PATH}/configuration/protos/:/usr/src/app/protos/
+      - ${ROOT_PATH}/scripts/:/usr/src/app/scripts/
       - /usr/src/app/node_modules
     networks:
       - network

@@ -33,8 +33,11 @@ app.use('/hello-grpc', HelloGRPC)
 // Proxy request
 app.use('/service-http', httpProxy('http://service-http'))
 
-app.use('/info', (req, res) => {
-  res.json(Object.assign(info, {
+
+app.use('/status', (req, res) => {
+  res.json(Object.assign({
+    status: 'OK'
+  }, info, {
     node: process.versions
   }))
 })

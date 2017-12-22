@@ -10,6 +10,7 @@ dist
 .nyc_output
 .next
 /.env
+build
 bower_components
 *.log
 *.sublime*
