@@ -52,8 +52,13 @@ info:
 	@echo IP - $(call get_IP,sinergy.bus)
 	@echo $(LINE)
 
-	@echo sinergy.micro-hello
-	@echo IP - $(call get_IP,sinergy.micro-hello)
+	@echo sinergy.service-grpc
+	@echo IP - $(call get_IP,sinergy.service-grpc)
+	@echo $(LINE)
+	@echo $(LINE)
+
+	@echo sinergy.service-http
+	@echo IP - $(call get_IP,sinergy.service-http)
 	@echo $(LINE)
 
 

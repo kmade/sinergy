@@ -3,12 +3,10 @@ ARG nodemon_version
 # ---- Base Node ----
 FROM node:$node_version AS base
 
-EXPOSE 3000
-EXPOSE 5858
+EXPOSE 80 443
 
 RUN echo "Installing nodemon@$nodemon_version"
 RUN npm i -g nodemon@$nodemon_version --loglevel error
-
 RUN mkdir -p /usr/src/app
 
 # fake central dependency links, so that the links have a connecting central link across containers

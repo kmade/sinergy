@@ -14,7 +14,7 @@ const tray = require('./electron/tray')
 * ------------------------------------------------------------------------
 */
 const isDev     = process.env.NODE_ENV === 'development'
-const isSecure  = process.env.SSL_SECURE === 'true'
+
 
 /**
 * ------------------------------------------------------------------------
@@ -46,5 +46,5 @@ app.on('certificate-error', (event, webContents, url, error, certificate, callba
     // On certificate error we disable default behaviour (stop loading the page)
     // and we then say "it is all fine - true" to the callback
     event.preventDefault();
-    callback(!isSecure);
+    callback(isDev);
 });

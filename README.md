@@ -17,12 +17,7 @@ o.  )88b  888   8       `888  888    .o  888     `88.    .88'     `888'
 
 # sINerGy
 
-A pluggable banking desktop application based on the [Open Bank Project][1] using [Electron][2] and [Polymer][3].
-
-## Find out more about:
-
-- [Technology stack](./docs/technology-stack)
-- [Project board & the teams](https://trello.com/b/N68z43ZK/sinergy)
+A microservices framework for building Web and Desktop applications.
 
 ## Macro architecture
 <img src="./assets/macro-arch-diagram.png" alt="Diagram" />
@@ -60,7 +55,7 @@ make build <service>
 ## CLI
 TBA
 
-## MicroServices
+## External access
 
 ### Polytron
 UI Polymer Web/Desktop application
@@ -71,25 +66,27 @@ UI ReactJS Web/Desktop application
 - https://reactron.sinergy.localhost -> http://localhost:9080
 
 ### API
-API gateway - NodeJS 
-- https://api.sinergy.localhost -> http://localhost:4000
+API gateway - NodeJS
+- https://api.sinergy.localhost -> http://localhost:3000
+
+## Internal access
 
 ### DB
 CouchDB server
-- https://db.sinergy.localhost/_utils/fauxton/
+- https://localhost:1000/_utils/fauxton/
 
 ### BUS
 RabitMQ - Message queue broker
-- https://bus.sinergy.localhost/
+- https://localhost:2000/
 
-### Micro-hello
-gRPC NodeJS demo service
-- https://micro-hello.sinergy.localhost/
+### Micro services
+- service-grpc - gRPC NodeJS demo service
+- service-http - microjs http NodeJS demo service
 
 ### Docs
 TBA
 
-### QA
+### QA & Testing
 TBA
 
 ### Monitoring & Logging
@@ -98,11 +95,10 @@ TBA
 ---
 > For more see Makefile for more info until `make help` is complete
 
-### &copy; an AppChemistry project.
+### &copy; an AppChemistry & [|{ustomM@de][4] project.
 
-<img src="./assets/alchemy-laboratory-granger.gif" align="center alt="logo" />
+<img src="./assets/alchemy-laboratory-granger.gif" alt="logo" />
 
-
-[1]:https://www.openbankproject.com/
 [2]:https://electron.atom.io/
 [3]:https://www.polymer-project.org/
+[4]:https://github.com/kmade/

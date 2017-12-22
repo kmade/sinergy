@@ -1,9 +1,8 @@
 {
-  "name": "@sinergy/micro-hello",
+  "name": "@sinergy/service-grpc",
   "version": "0.0.1-alpha.0",
-  "description": "NodeJS API microservice using express",
-  "main": "build/index.mjs",
-  "module": "build/index.mjs",
+  "description": "NodeJS API microservice using grpc",
+  "main": "src/index.js",
   "scripts": {
     "start:dev": "nodemon -w src --inspect=0.0.0.0:5859 ./src/index.js",
     "test": "npm run test:lint && npm run test:unit && npm run test:e2e",

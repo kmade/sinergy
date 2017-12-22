@@ -1,10 +1,10 @@
 {
-  "name": "@sinergy/api",
+  "name": "@sinergy/service-http",
   "version": "0.0.1-alpha.0",
-  "description": "NodeJS API Gateway /w express",
-  "main": "src/app.js",
+  "description": "NodeJS API microservice using micro-http",
+  "main": "src/index.js",
   "scripts": {
-    "start:dev": "nodemon -w src --inspect=0.0.0.0:5858 ./bin/server.js",
+    "start:dev": "nodemon -w src --inspect=0.0.0.0:5859 ./src/index.js",
     "test": "npm run test:lint && npm run test:unit && npm run test:e2e",
     "test:lint": "eslint src",
     "test:unit": "tap src/**/__test__/*.test.js --coverage --100",
@@ -12,20 +12,15 @@
     "fix:lint": "eslint src --fix"
   },
   "keywords": [
-    "express",
+    "micro",
     "server"
   ],
   "license": "UNLICENSED",
   "dependencies": {
     "dotenv": "^4.0.0",
-    "express": "^4.13.4",
-    "express-http-proxy": "^1.1.0",
-    "grpc": "^1.7.1",
-    "grpc-caller": "^0.3.0",
-    "pouchdb": "6.3.4",
-    "ramda": "^0.24.1",
-    "servicebus": "^2.0.10",
-    "socket.io": "^2.0.4"
+    "then-sleep": "*",
+    "micro": "^9.0.2",
+    "servicebus": "^2.0.10"
   },
   "devDependencies": {
     "eslint": "4",

@@ -1,5 +1,5 @@
 const PouchDB = require('pouchdb')
-const COUCHDB_URL = process.env.COUCHDB_URL
+const DB_URL = process.env.DB_URL
 
 let db
 
@@ -17,7 +17,7 @@ const HelloModel = () => Object.assign(this, ({
  * @todo ErrorHandling
  */
 HelloModel.create = ( table = 'hello' ) => {
-  db = new PouchDB(`${COUCHDB_URL}/${table}`)
+  db = new PouchDB(`${DB_URL}/${table}`)
   db.on('error', err => console.error('Error', err)) // deal with error later
   return HelloModel()
 }

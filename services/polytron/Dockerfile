@@ -1,6 +1,6 @@
 FROM kmade/harbor-polymer:latest AS base
 
-EXPOSE 8081 9081
+EXPOSE 8080
 
 # Provides cached layer for node_modules
 ADD package.json /tmp/package.json

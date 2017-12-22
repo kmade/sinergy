@@ -1,12 +1,12 @@
 version: "3"
 
 networks:
-  sinergy-net:
+  network:
     driver: bridge
     ipam:
       driver: default
       config:
-        - subnet: 172.28.0.0/16
+        - subnet: 172.50.0.0/16
 
 ## TODO
 # Create local drivers for shared and persistent folders
@@ -21,12 +21,15 @@ networks:
   #   driver_opts:
   #     mountpoint: ${ROOT_PATH}/configuration/protos/
 
+
 services:
-  # Proxy
+  #####################################################
+  # PROXY
+  #####################################################
   nginx-proxy:
     restart: always
     image: jwilder/nginx-proxy
-    container_name: sinergy.nginx
+    container_name: ${COMPOSE_PROJECT_NAME}.nginx
     links:
       - api
       - db
@@ -41,161 +44,199 @@ services:
       - ${ROOT_PATH}/data/logs/nginx/:/var/log/nginx/
       - ${ROOT_PATH}/configuration/ssl/:/etc/nginx/ssl/
       - ${ROOT_PATH}/configuration/nginx/vhost.d/:/etc/nginx/vhost.d/
-
     networks:
-     - sinergy-net
-    environment:
-      - DEFAULT_HOST=react.sinergy.localhost
+     - network
+    env_file:
+      - ${ROOT_PATH}/.env
 
-  # Backend
-    ## DB
-  db:
-    image: sinergy/db
-    build: ${DB_SERVICE_PATH}
+
+  #####################################################
+  # Web Apps
+  #####################################################
+
+  ## WebComponents w/ Polymer
+  polytron:
+    image: ${COMPOSE_PROJECT_NAME}/polytron
+    container_name: ${COMPOSE_PROJECT_NAME}.polytron
     restart: unless-stopped
-    container_name: sinergy.db
+    depends_on:
+      - api
+    build:
+      context: ${APP_POLYTRON_PATH}
+    command: yarn start:dev
+    volumes:
+      - ${APP_POLYTRON_PATH}/:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/bower_components
+    ports:
+      - "${APP_POLYTRON_VPORT}"
+    networks:
+      - network
+    environment:
+      - VIRTUAL_HOST=${APP_POLYTRON_VHOST}
+      - VIRTUAL_PORT=${APP_POLYTRON_VPORT}
+    env_file:
+      - ${ROOT_PATH}/.env
+      - ${APP_POLYTRON_PATH}/.env
+
+  ## ReactDOM w/ NextJS
+  reactron:
+    image: ${COMPOSE_PROJECT_NAME}/reactron
+    container_name: ${COMPOSE_PROJECT_NAME}.reactron
+    restart: unless-stopped
+    depends_on:
+      - api
+    build:
+      context: ${APP_REACTRON_PATH}
+      args:
+        node_version: ${NODEJS_VERSION}
+    command: yarn start:dev
+    volumes:
+      - ${APP_REACTRON_PATH}/:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "${APP_REACTRON_VPORT}"
+    networks:
+      - network
+    environment:
+      - VIRTUAL_HOST=${APP_REACTRON_VHOST}
+      - VIRTUAL_PORT=${APP_REACTRON_VPORT}
+    env_file:
+      - ${ROOT_PATH}/.env
+      - ${APP_REACTRON_PATH}/.env
+
+
+  #####################################################
+  # DB Storage
+  #####################################################
+  db:
+    image: ${COMPOSE_PROJECT_NAME}/db
+    build: ${DB_PATH}
+    restart: unless-stopped
+    container_name: ${COMPOSE_PROJECT_NAME}.db
     volumes:
       - ${ROOT_PATH}/configuration/db/couchdb/etc:/usr/local/etc/couchdb/local.d
       - ${ROOT_PATH}/data/db/couchdb/lib:/usr/local/var/lib/couchdb
       - ${ROOT_PATH}/configuration/ssl/:/etc/nginx/certs/
     ports:
-      - "6984:6984"
-      - "5984:5984"
+      - "${DB_VPORT}:6984"
     networks:
-      sinergy-net:
-        ipv4_address: 172.28.1.1
+      - network
     env_file:
-      - ${DB_SERVICE_PATH}/.env
+      - ${DB_PATH}/.env
+    environment:
+      - COUCHDB_USER=${DB_USER}
+      - COUCHDB_PASSWORD=${DB_PASS}
 
-  ## EXPRESS API GATEWAY
-  api:
-    image: sinergy/api
-    container_name: sinergy.api
-    restart: unless-stopped
-    depends_on:
-      - db
-      - bus
-      - micro-hello
-    build:
-      context: ${API_SERVICE_PATH}
-      args:
-        node_version: ${NODEJS_VERSION}
-        nodemon_version: "latest"
-    command: bash -c "while ! curl -fs bus:15672 > /dev/null; do echo waiting for bus; sleep 3; done; yarn start:dev;"
-    volumes:
-      - ${API_SERVICE_PATH}/:/usr/src/app
-      - ${ROOT_PATH}/configuration/dev/.eslintrc.yml:/usr/src/app/.eslintrc.yml
-      - ${ROOT_PATH}/configuration/ssl/:/usr/src/app/ssl/
-      - ${ROOT_PATH}/configuration/protos/:/usr/src/app/protos/
-      - /usr/src/app/node_modules
-    expose:
-      - 4000
-      - 5858
-    ports:
-      - "4000:4000"
-      - "5858:5858"
-    networks:
-      sinergy-net:
-        ipv4_address: 172.28.1.2
-    env_file:
-      - ${API_SERVICE_PATH}/.env
-  ## bus
+  #####################################################
+  # Message Broker
+  #####################################################
   bus:
-    image: sinergy/bus
-    build: ${BUS_SERVICE_PATH}
-    container_name: sinergy.bus
+    image: ${COMPOSE_PROJECT_NAME}/bus
+    build: ${BUS_PATH}
+    container_name: ${COMPOSE_PROJECT_NAME}.bus
     restart: unless-stopped
     ports:
-      - "5000:15672"
-      - "5672:5672"
+      - "${BUS_VPORT}:15672"
     # healthcheck:
     #   test: ["CMD", "curl", "-fs", "http://localhost"]
     #   interval: 1m30s
     #   timeout: 10s
     #   retries: 3
     networks:
-      sinergy-net:
-        ipv4_address: 172.28.1.3
+      - network
     env_file:
-      - ${BUS_SERVICE_PATH}/.env
+      - ${BUS_PATH}/.env
+    environment:
+      - RABBITMQ_DEFAULT_USER=${BUS_USER}
+      - RABBITMQ_DEFAULT_PASS=${BUS_PASS}
 
-  # UIs
-  polytron:
-    image: sinergy/polytron
-    container_name: sinergy.polytron
-    restart: unless-stopped
-    build:
-      context: ${APP_POLYMER_SERVICE_PATH}
-    command: yarn start:dev
-    volumes:
-      - ${APP_POLYMER_SERVICE_PATH}/:/usr/src/app
-      - /usr/src/app/node_modules
-      - /usr/src/app/bower_components
-    depends_on:
-      - api
-    ports:
-      - "8081:8081"
-      - "9081:9081"
-    networks:
-      sinergy-net:
-        ipv4_address: 172.28.1.4
-    env_file:
-      - ${APP_POLYMER_SERVICE_PATH}/.env
-
-  reactron:
-    image: sinergy/reactron
-    container_name: sinergy.reactron
-    restart: unless-stopped
-    build:
-      context: ${APP_REACT_SERVICE_PATH}
-      args:
-        node_version: ${NODEJS_VERSION}
-        nodemon_version: "latest"
-    command: yarn start:dev
-    volumes:
-      - ${APP_REACT_SERVICE_PATH}/:/usr/src/app
-      - /usr/src/app/node_modules
-    depends_on:
-      - api
-    ports:
-      - "8080:8080"
-      - "9080:9080"
-    networks:
-      sinergy-net:
-        ipv4_address: 172.28.1.5
-    env_file:
-      - ${APP_REACT_SERVICE_PATH}/.env
-
-
-  ##################################################
-  ## MicroServices
-  ##################################################
-  micro-hello:
-    image: sinergy/micro-hello
-    container_name: sinergy.micro-hello
+  #####################################################
+  # EXPRESS API GATEWAY
+  #####################################################
+  api:
+    image: ${COMPOSE_PROJECT_NAME}/api
+    container_name: ${COMPOSE_PROJECT_NAME}.api
     restart: unless-stopped
     depends_on:
+      - db
       - bus
     build:
-      context: ${MICRO_HELLO_SERVICE_PATH}
+      context: ${API_PATH}
       args:
         node_version: ${NODEJS_VERSION}
         nodemon_version: "latest"
     command: bash -c "while ! curl -fs bus:15672 > /dev/null; do echo waiting for bus; sleep 3; done; yarn start:dev;"
     volumes:
-      - ${MICRO_HELLO_SERVICE_PATH}/:/usr/src/app
+      - ${API_PATH}/:/usr/src/app
       - ${ROOT_PATH}/configuration/dev/.eslintrc.yml:/usr/src/app/.eslintrc.yml
       - ${ROOT_PATH}/configuration/ssl/:/usr/src/app/ssl/
       - ${ROOT_PATH}/configuration/protos/:/usr/src/app/protos/
       - /usr/src/app/node_modules
     expose:
-      - 40000
-      - 5859
+      - ${API_VPORT}
+      - 5858
     ports:
-      - "40000:40000"
-      - "5859:5859"
+      - "${API_VPORT}"
+      - "5858"
     networks:
-      sinergy-net:
-        ipv4_address: 172.28.1.100
+      - network
+    environment:
+      - VIRTUAL_HOST=${API_VHOST}
+      - VIRTUAL_PORT=${API_VPORT}
     env_file:
-      - ${MICRO_HELLO_SERVICE_PATH}/.env
+      - ${ROOT_PATH}/.env
+      - ${API_PATH}/.env
+
+  ##################################################
+  ## Micro-Services
+  ##################################################
+  # gRPC server
+  service-grpc:
+    image: ${COMPOSE_PROJECT_NAME}/service-grpc
+    container_name: ${COMPOSE_PROJECT_NAME}.service-grpc
+    restart: unless-stopped
+    depends_on:
+      - bus
+    build:
+      context: ${SERVICE_GRPC_PATH}
+      args:
+        node_version: ${NODEJS_VERSION}
+        nodemon_version: "latest"
+    command: bash -c "while ! curl -fs bus:15672 > /dev/null; do echo waiting for bus; sleep 3; done; yarn start:dev;"
+    volumes:
+      - ${SERVICE_GRPC_PATH}/:/usr/src/app
+      - ${ROOT_PATH}/configuration/dev/.eslintrc.yml:/usr/src/app/.eslintrc.yml
+      - ${ROOT_PATH}/configuration/ssl/:/usr/src/app/ssl/
+      - ${ROOT_PATH}/configuration/protos/:/usr/src/app/protos/
+      - /usr/src/app/node_modules
+    networks:
+      - network
+    env_file:
+      - ${SERVICE_GRPC_PATH}/.env
+      - ${ROOT_PATH}/.env
+
+  # http server
+  service-http:
+    image: ${COMPOSE_PROJECT_NAME}/service-http
+    container_name: ${COMPOSE_PROJECT_NAME}.service-http
+    restart: unless-stopped
+    depends_on:
+      - bus
+    build:
+      context: ${SERVICE_HTTP_PATH}
+      args:
+        node_version: ${NODEJS_VERSION}
+        nodemon_version: "latest"
+    command: bash -c "while ! curl -fs bus:15672 > /dev/null; do echo waiting for bus; sleep 3; done; yarn start:dev;"
+    volumes:
+      - ${SERVICE_HTTP_PATH}/:/usr/src/app
+      - ${ROOT_PATH}/configuration/dev/.eslintrc.yml:/usr/src/app/.eslintrc.yml
+      - ${ROOT_PATH}/configuration/ssl/:/usr/src/app/ssl/
+      - ${ROOT_PATH}/configuration/protos/:/usr/src/app/protos/
+      - /usr/src/app/node_modules
+    networks:
+      - network
+    env_file:
+      - ${SERVICE_HTTP_PATH}/.env
+      - ${ROOT_PATH}/.env

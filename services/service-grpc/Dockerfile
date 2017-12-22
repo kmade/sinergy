@@ -3,8 +3,7 @@ ARG nodemon_version
 # ---- Base Node ----
 FROM node:$node_version AS base
 
-EXPOSE 40000
-EXPOSE 5859
+EXPOSE 80 443
 
 RUN echo "Installing nodemon@$nodemon_version"
 RUN npm i -g nodemon@$nodemon_version --loglevel error

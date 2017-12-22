@@ -1,13 +1,8 @@
 #!/usr/bin/env node
 
 require('dotenv').config()
-const http = require('http')
 const { app, server } = require('..')
 
-app.set('port', process.env.PORT)
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(process.env.PORT, () => console.log(`Api running at ${process.env.VIRTUAL_HOST}:${process.env.PORT}`))
+const HOST = `${process.env.API_VHOST}:${process.env.API_VPORT}`
+server.listen(process.env.API_VPORT, () =>
+    console.log(`Server running at ${HOST}`))

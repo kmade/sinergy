@@ -4,8 +4,9 @@ const path = require('path')
 const Mali = require('mali')
 const grpc = require('grpc')
 const fs = require('fs')
+const servicebus = require('servicebus')
 
-const HOSTPORT = `0.0.0.0:${process.env.PORT}`;
+const HOST = `0.0.0.0`;
 const PROTO_PATH = path.resolve(__dirname, '../protos/hello.proto')
 const app = new Mali(PROTO_PATH, 'Greeter')
 
@@ -18,10 +19,8 @@ const kvpair = {
 }
 const credentials = grpc.ServerCredentials.createSsl(cacert, [kvpair])
 
-
-const bus = require('servicebus').bus({
-  url: process.env.RABBITMQ_URL,
-  vhost: process.env.RABBITMQ_VHOST,
+const bus = servicebus.bus({
+  url: process.env.BUS_URL,
 })
 
 /**
@@ -32,7 +31,7 @@ function sayHello (ctx) {
   // const id = ctx.req.id //get the id from request
   const name = 'Sinergy';
   bus.publish('hello', {
-    message: name
+    message: `Publish from Service-gRPC ${name}`
   })
 
   ctx.res = { name }
@@ -45,8 +44,8 @@ function main () {
 
   const app = new Mali(PROTO_PATH, 'Greeter')
   app.use({ sayHello })
-  app.start(HOSTPORT)
-  console.log(`Greeter service running @ ${HOSTPORT}`)
+  app.start(HOST)
+  console.log(`Greeter service running: ${HOST}`)
 }
 
 main()

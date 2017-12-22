@@ -8,8 +8,8 @@
   "scripts": {
     "postinstall": "bower i -s && electron-rebuild",
     "start:electron": "npm install && electron .",
-    "start:dev": "polymer serve -p 9081 -H 0.0.0.0",
-    "start": "polymer serve build/default -p 8081 -H 0.0.0.0",
+    "start:dev": "polymer serve -p $VIRTUAL_PORT -H 0.0.0.0",
+    "start": "polymer serve build/default -p $VIRTUAL_PORT -H 0.0.0.0",
     "build:electron": "npm run clean && npm run build:icons && npm run build:mac && npm run pack:dmg",
     "build:icons": "electron-icon-maker --input=./assets/logo.png --output=./assets/icons",
     "build:mac": "electron-packager . --overwrite --asar --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=dist",

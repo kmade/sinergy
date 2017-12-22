@@ -3,13 +3,18 @@ const servicebus = require('servicebus')
 const info  = require('../package.json')
 const HelloREST = require('./rest-hello')
 const HelloGRPC = require('./grpc-hello')
+const httpProxy = require('express-http-proxy')
 const app = express()
+
+
 const server = require('http').Server(app)
-const io = require('socket.io')(server)
+const io = require('socket.io')(server, {
+  path: '/io',
+  transports: ['websocket'],
+})
 
 const bus = servicebus.bus({
-  url: process.env.RABBITMQ_URL,
-  vhost: process.env.RABBITMQ_VHOST,
+  url: process.env.BUS_URL,
 })
 
 bus.subscribe('hello', event => console.log('Service Bus', event))
@@ -24,6 +29,9 @@ app.use((req, res, next) => {
 // modules
 app.use('/hello-rest', HelloREST)
 app.use('/hello-grpc', HelloGRPC)
+
+// Proxy request
+app.use('/service-http', httpProxy('http://service-http'))
 
 app.use('/info', (req, res) => {
   res.json(Object.assign(info, {

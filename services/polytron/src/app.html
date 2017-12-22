@@ -94,6 +94,8 @@
               this.$.message.classList.add('fade-in')
             }).catch(err => log.error(err))
 
+            api(`/service-http`).then(res => log.info(res))
+
           })
 
           this.$.message.addEventListener('blur', this._updateMessage)

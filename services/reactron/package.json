@@ -8,10 +8,10 @@
   "main": "./electron/app.js",
   "scripts": {
     "start:electron": "electron .",
-    "start:dev": "next dev ./src -p 9080",
+    "start:dev": "next dev ./src -p ${APP_REACTRON_VPORT}",
     "build": "next build src && next export src",
     "export": "next export",
-    "start": "next start ./src -p 8080",
+    "start": "next start ./src -p ${APP_REACTRON_VPORT}",
     "build:electron": "npm run clean && npm run build && npm run build:icons && npm run build:mac && npm run pack:dmg",
     "build:icons": "electron-icon-maker --input=./assets/logo.png --output=./assets/icons",
     "build:mac": "electron-packager . --overwrite --asar --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=dist",

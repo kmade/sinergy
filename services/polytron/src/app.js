@@ -14,9 +14,12 @@
   // Logger
   const log = console //@todo
   // Socket.io
-  const socket = io(config.API_URL)
-    .on('connect', () => log.debug('Socket connected'))
-    .on('disconnect', () => log.warn('Socket disconnected'))
+  const socket = io(config.API_URL, {
+    path: '/io',
+    transports: ['websocket'],
+  })
+  .on('connect', () => log.debug('Socket connected'))
+  .on('disconnect', () => log.warn('Socket disconnected'))
 
   return global.Sinergy = {
       version: 'x.x.x',
