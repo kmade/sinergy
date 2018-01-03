@@ -17,7 +17,7 @@ const bus = servicebus.bus({
   url: process.env.BUS_URL,
 })
 
-bus.subscribe('hello', event => console.log('Service Bus', event))
+bus.subscribe('hello', event => console.log('Hello- Service Bus', event))
 io.on('connection', socket => console.log('Client connected'))
 
 
@@ -32,7 +32,6 @@ app.use('/hello-grpc', HelloGRPC)
 
 // Proxy request
 app.use('/service-http', httpProxy('http://service-http'))
-
 
 app.use('/status', (req, res) => {
   res.json(Object.assign({

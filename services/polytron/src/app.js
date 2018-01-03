@@ -1,9 +1,13 @@
-((global, config) => {
+((window, config) => {
 
   // Native
-  const electron = window.require && require('./electron') || {
-    MockNativeIMPL: 'N/A'
+  const electron = window.require && require('./electron')(config) || {
+    // Adapter for Browser support
+    openApp: (url) => {
+      return window.open(url, 'AppName', 'menubar=no,location=no,resizable=yes,scrollbars=yes,status=yes')
+    }
   }
+
   // Errors
 
   // Local PouchDB
@@ -12,7 +16,8 @@
   // Async/Await fetch
   const api = async (uri) => await (await fetch(`${config.API_URL}${uri}`, {})).json()
   // Logger
-  const log = console //@todo
+  // @todo
+  const log = console
   // Socket.io
   const socket = io(config.API_URL, {
     path: '/io',
@@ -21,7 +26,7 @@
   .on('connect', () => log.debug('Socket connected'))
   .on('disconnect', () => log.warn('Socket disconnected'))
 
-  return global.Sinergy = {
+  return window.Sinergy = {
       version: 'x.x.x',
       config,
       electron,

@@ -15,7 +15,6 @@ const tray = require('./electron/tray')
 */
 const isDev     = process.env.NODE_ENV === 'development'
 
-
 /**
 * ------------------------------------------------------------------------
 * App
@@ -23,8 +22,10 @@ const isDev     = process.env.NODE_ENV === 'development'
 */
 let windowUrl = path.join(__dirname, 'index.html')
 let win = null
+
 app.once('ready', () => {
   let win = mainWindow.create(windowUrl)
+
   mainMenu.create()
   tray.create()
   /**
@@ -33,7 +34,7 @@ app.once('ready', () => {
   * ------------------------------------------------------------------------
   */
   if(isDev) {
-    require('electron-reload')(path.resolve(__dirname), {
+    require('electron-reload')(path.resolve(__dirname, 'src'), {
       electron: path.resolve(__dirname, 'node_modules', '.bin', 'electron')
     })
     win.webContents.openDevTools()

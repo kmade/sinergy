@@ -51,7 +51,7 @@
       }
     </style>
     <input id="message" value$="[[message]]"></h1>
-    <div id="loader"></div>
+    <div id="loader" on-click="openApp"></div>
   </template>
 
   <script>
@@ -113,6 +113,10 @@
         ready() {
           super.ready()
           socket.on('hello', data => log.info(`Socket reviced from  ${data.name}`, data))
+        }
+        openApp() {
+          this.app = electron.openApp('https://reactron.sinergy.localhost')
+          log.debug(this.app)
         }
       }
      customElements.define(App.is, App)

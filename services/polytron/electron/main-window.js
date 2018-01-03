@@ -23,6 +23,7 @@ const getStyles = () => {
     }
   `
 }
+let win
 
 exports.create = () => {
   const { size } = electron.screen.getPrimaryDisplay()
@@ -60,6 +61,8 @@ exports.create = () => {
   win.webContents.on('did-finish-load', () => {
     win.webContents.insertCSS(getStyles())
   })
+
   return win;
 }
 
+exports.win = win;

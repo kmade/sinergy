@@ -20,6 +20,9 @@ networks:
   #   driver: local
   #   driver_opts:
   #     mountpoint: ${ROOT_PATH}/configuration/protos/
+  #     mountpoint: ${ROOT_PATH}/configuration/ssl/
+  # node_modules:
+  #   driver: local
 
 
 services:
@@ -177,7 +180,7 @@ services:
     command: ["sh", "scripts/wait-for.sh", "bus:15672", "yarn", "start:dev"]
     volumes:
       - ${API_PATH}/:/usr/src/app
-      - ${ROOT_PATH}/configuration/dev/.eslintrc.yml:/usr/src/app/.eslintrc.yml
+      - ${ROOT_PATH}/configuration/qa/.eslintrc.yml:/usr/src/app/.eslintrc.yml
       - ${ROOT_PATH}/configuration/ssl/:/usr/src/app/ssl/
       - ${ROOT_PATH}/configuration/protos/:/usr/src/app/protos/
       - ${ROOT_PATH}/scripts/:/usr/src/app/scripts/
@@ -215,7 +218,7 @@ services:
     command: ["sh", "scripts/wait-for.sh", "bus:15672", "yarn", "start:dev"]
     volumes:
       - ${SERVICE_GRPC_PATH}/:/usr/src/app
-      - ${ROOT_PATH}/configuration/dev/.eslintrc.yml:/usr/src/app/.eslintrc.yml
+      - ${ROOT_PATH}/configuration/qa/.eslintrc.yml:/usr/src/app/.eslintrc.yml
       - ${ROOT_PATH}/configuration/ssl/:/usr/src/app/ssl/
       - ${ROOT_PATH}/configuration/protos/:/usr/src/app/protos/
       - ${ROOT_PATH}/scripts/:/usr/src/app/scripts/
@@ -241,7 +244,7 @@ services:
     command: ["sh", "scripts/wait-for.sh", "bus:15672", "yarn", "start:dev"]
     volumes:
       - ${SERVICE_HTTP_PATH}/:/usr/src/app
-      - ${ROOT_PATH}/configuration/dev/.eslintrc.yml:/usr/src/app/.eslintrc.yml
+      - ${ROOT_PATH}/configuration/qa/.eslintrc.yml:/usr/src/app/.eslintrc.yml
       - ${ROOT_PATH}/configuration/ssl/:/usr/src/app/ssl/
       - ${ROOT_PATH}/configuration/protos/:/usr/src/app/protos/
       - ${ROOT_PATH}/scripts/:/usr/src/app/scripts/

@@ -13,6 +13,6 @@ micro(async (req, res) => {
   bus.publish('hello', {
     message: `Publish from Service-HTTP ${info.name}`
   })
-  await sleep(100)
+  await sleep(3000)
   micro.send(res, 200, info)
 }).listen(80)

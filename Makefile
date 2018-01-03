@@ -12,8 +12,10 @@ SHELL := /bin/bash
 
 ROOT := $(shell pwd)
 SERVICES_PATH := ${ROOT}/services
-SINERGY_PS = `docker-compose -f docker/compose.dev.yml ps | grep 'sinergy'`
+SINERGY_PS = `docker-compose -f $(DOCKER_DEV) ps | grep 'sinergy'`
 SINERGY_PS_IDS = `docker ps -a | grep 'sinergy' | cut -f1 -d ' '`
+DOCKER_DEV=docker-compose.yml
+DOCKER_CONFIGS_PATH=configuration/docker
 LINE = '______________________________________________________________________________________________'
 ## display this help message
 help:
@@ -64,28 +66,28 @@ info:
 
 up:
 	$(info $(ANNOUNCE_BODY))
-	docker-compose -f docker/compose.dev.yml up --build $(UP_ARGS)
+	docker-compose -f $(DOCKER_DEV) up --build $(UP_ARGS)
 
 run:
-	docker-compose -f docker/compose.dev.yml run --rm --no-deps $(RUN_ARGS)
+	docker-compose -f $(DOCKER_DEV) run --rm --no-deps $(RUN_ARGS)
 
 exec:
-	docker-compose -f docker/compose.dev.yml exec $(EXEC_ARGS)
+	docker-compose -f $(DOCKER_DEV) exec $(EXEC_ARGS)
 
 logs:
-	docker-compose -f docker/compose.dev.yml logs -f $(LOGS_ARGS)
+	docker-compose -f $(DOCKER_DEV) logs -f $(LOGS_ARGS)
 
 test:
-	docker-compose -f docker/compose.dev.yml -f docker/compose.test.yml run --rm --no-deps $(TEST_ARGS)
+	docker-compose -f $(DOCKER_DEV) -f $(DOCKER_CONFIGS_PATH)/compose.test.yml run --rm --no-deps $(TEST_ARGS)
 
 stop:
-	docker-compose -f docker/compose.dev.yml stop $(STOP_ARGS)
+	docker-compose -f $(DOCKER_DEV) stop $(STOP_ARGS)
 
 restart:
-	docker-compose -f docker/compose.dev.yml restart $(RS_ARGS)
+	docker-compose -f $(DOCKER_DEV) restart $(RS_ARGS)
 ### Build ###
 build:
-	docker-compose -f docker/compose.dev.yml build $(BUILD_ARGS)
+	docker-compose -f $(DOCKER_DEV) build $(BUILD_ARGS)
 
 ### NGINX ###
 nginx/reload:
