@@ -15,6 +15,7 @@ SERVICES_PATH := ${ROOT}/services
 SINERGY_PS = `docker-compose -f $(DOCKER_DEV) ps | grep 'sinergy'`
 SINERGY_PS_IDS = `docker ps -a | grep 'sinergy' | cut -f1 -d ' '`
 DOCKER_DEV=docker-compose.yml
+DOCKER_OVER=docker-compose.override.yml
 DOCKER_CONFIGS_PATH=configuration/docker
 LINE = '______________________________________________________________________________________________'
 ## display this help message
@@ -22,9 +23,7 @@ help:
 	@echo -e "\033[32m"
 	@echo "Display help here"
 
-
 ### Install ###
-
 install:
 	#npm install --registry https://registry.npmjs.org/ --loglevel error --progress false
 
@@ -41,8 +40,13 @@ info:
 	@echo IP - $(call get_IP,sinergy.polytron)
 	@echo $(LINE)
 	@echo sinergy.reactron
-	@echo Url: https://react.sinergy.localhost
+	@echo Url: https://reactron.sinergy.localhost
 	@echo IP - $(call get_IP,sinergy.reactron)
+	@echo $(LINE)
+	@echo $(LINE)
+	@echo sinergy.elelm
+	@echo Url: https://elelm.sinergy.localhost
+	@echo IP - $(call get_IP,sinergy.elelm)
 	@echo $(LINE)
 	@echo sinergy.api
 	@echo IP - $(call get_IP,sinergy.api)
@@ -66,28 +70,28 @@ info:
 
 up:
 	$(info $(ANNOUNCE_BODY))
-	docker-compose -f $(DOCKER_DEV) up --build $(UP_ARGS)
+	docker-compose -f $(DOCKER_DEV) -f $(DOCKER_OVER) up --build $(UP_ARGS)
 
 run:
-	docker-compose -f $(DOCKER_DEV) run --rm --no-deps $(RUN_ARGS)
+	docker-compose -f $(DOCKER_DEV) -f $(DOCKER_OVER) run --rm --no-deps $(RUN_ARGS)
 
 exec:
-	docker-compose -f $(DOCKER_DEV) exec $(EXEC_ARGS)
+	docker-compose -f $(DOCKER_DEV) -f $(DOCKER_OVER) exec $(EXEC_ARGS)
 
 logs:
-	docker-compose -f $(DOCKER_DEV) logs -f $(LOGS_ARGS)
+	docker-compose -f $(DOCKER_DEV) -f $(DOCKER_OVER) logs -f $(LOGS_ARGS)
 
 test:
-	docker-compose -f $(DOCKER_DEV) -f $(DOCKER_CONFIGS_PATH)/compose.test.yml run --rm --no-deps $(TEST_ARGS)
+	docker-compose -f $(DOCKER_DEV) -f $(DOCKER_OVER) -f $(DOCKER_CONFIGS_PATH)/compose.test.yml run --rm --no-deps $(TEST_ARGS)
 
 stop:
-	docker-compose -f $(DOCKER_DEV) stop $(STOP_ARGS)
+	docker-compose -f $(DOCKER_DEV) -f $(DOCKER_OVER) stop $(STOP_ARGS)
 
 restart:
-	docker-compose -f $(DOCKER_DEV) restart $(RS_ARGS)
+	docker-compose -f $(DOCKER_DEV) -f $(DOCKER_OVER) restart $(RS_ARGS)
 ### Build ###
 build:
-	docker-compose -f $(DOCKER_DEV) build $(BUILD_ARGS)
+	docker-compose -f $(DOCKER_DEV) -f $(DOCKER_OVER) build $(BUILD_ARGS)
 
 ### NGINX ###
 nginx/reload:

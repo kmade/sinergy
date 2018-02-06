@@ -1,0 +1,265 @@
+version: "3.3"
+
+networks:
+  network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.50.0.0/16
+secrets:
+  couchdb-pw:
+    file: ${ROOT_PATH}/configuration/secrets/couchdb-fake-secret.txt
+## TODO
+# Create local drivers for shared and persistent folders
+# volumes:
+  # ssl:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     mountpoint: ${ROOT_PATH}/configuration/ssl/
+  # proto_files:
+  #   driver: local
+  #   driver_opts:
+  #     mountpoint: ${ROOT_PATH}/configuration/protos/
+  #     mountpoint: ${ROOT_PATH}/configuration/ssl/
+  # node_modules:
+  #   driver: local
+
+
+services:
+  #####################################################
+  # PROXY
+  #####################################################
+  nginx-proxy:
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes: #see @todo volumes
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ${ROOT_PATH}/data/logs/nginx/:/var/log/nginx/
+      - ${ROOT_PATH}/configuration/ssl/:/etc/nginx/ssl/
+      - ${ROOT_PATH}/configuration/nginx/vhost.d/:/etc/nginx/vhost.d/
+    networks:
+     - network
+    env_file:
+      - ${ROOT_PATH}/.env
+
+
+  #####################################################
+  # Web Apps
+  #####################################################
+
+  ## WebComponents w/ Polymer
+  polytron:
+    depends_on:
+      - api
+    restart: unless-stopped
+    build:
+      context: ${APP_POLYTRON_PATH}
+    command: ["sh", "scripts/wait-for.sh", "api:3000/status", "yarn", "start:dev"]
+    volumes:
+      - ${APP_POLYTRON_PATH}/:/usr/src/app
+      - ${ROOT_PATH}/scripts/:/usr/src/app/scripts/
+      - /usr/src/app/node_modules
+      - /usr/src/app/bower_components
+    ports:
+      - "${APP_POLYTRON_VPORT}"
+    networks:
+      - network
+    environment:
+      - VIRTUAL_HOST=${APP_POLYTRON_VHOST}
+      - VIRTUAL_PORT=${APP_POLYTRON_VPORT}
+    env_file:
+      - ${ROOT_PATH}/.env
+      - ${APP_POLYTRON_PATH}/.env
+
+  ## ReactDOM w/ NextJS
+  reactron:
+    depends_on:
+      - api
+    restart: unless-stopped
+    build:
+      context: ${APP_REACTRON_PATH}
+      args:
+        node_version: ${NODEJS_VERSION}
+    command: ["sh", "scripts/wait-for.sh", "api:3000/status", "yarn", "start:dev"]
+    volumes:
+      - ${APP_REACTRON_PATH}/:/usr/src/app
+      - ${ROOT_PATH}/scripts/:/usr/src/app/scripts/
+      - /usr/src/app/node_modules
+    ports:
+      - "${APP_REACTRON_VPORT}"
+    networks:
+      - network
+    environment:
+      - VIRTUAL_HOST=${APP_REACTRON_VHOST}
+      - VIRTUAL_PORT=${APP_REACTRON_VPORT}
+    env_file:
+      - ${ROOT_PATH}/.env
+      - ${APP_REACTRON_PATH}/.env
+
+  ## Elm app
+  elelm:
+    depends_on:
+      - api
+    restart: unless-stopped
+    build:
+      context: ${APP_ELELM_PATH}
+      args:
+        node_version: ${NODEJS_VERSION}
+    command: ["sh", "scripts/wait-for.sh", "api:3000/status", "yarn", "start:dev"]
+    volumes:
+      - ${APP_ELELM_PATH}/:/usr/src/app
+      - ${ROOT_PATH}/scripts/:/usr/src/app/scripts/
+      - /usr/src/app/node_modules
+    ports:
+      - "${APP_ELELM_VPORT}"
+    networks:
+      - network
+    environment:
+      - VIRTUAL_HOST=${APP_ELELM_VHOST}
+      - VIRTUAL_PORT=${APP_ELELM_VPORT}
+    env_file:
+      - ${ROOT_PATH}/.env
+      - ${APP_ELELM_PATH}/.env
+
+
+  #####################################################
+  # DB Storage
+  #####################################################
+  db:
+    build: ${DB_PATH}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost", "echo OK"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ${ROOT_PATH}/configuration/db/couchdb/etc:/usr/local/etc/couchdb/local.d
+      - ${ROOT_PATH}/data/db/couchdb/lib:/usr/local/var/lib/couchdb
+      - ${ROOT_PATH}/configuration/ssl/:/etc/nginx/certs/
+      - ${ROOT_PATH}/scripts/:/usr/src/app/scripts/
+    ports:
+      - "${DB_VPORT}:6984"
+    networks:
+      - network
+    env_file:
+      - ${DB_PATH}/.env
+    secrets:
+      - couchdb-pw
+    environment:
+      - COUCHDB_USER=${DB_USER}
+      - COUCHDB_PASSWORD=${DB_PASS}
+
+  #####################################################
+  # Message Broker
+  #####################################################
+  bus:
+    image: ${COMPOSE_PROJECT_NAME}/bus
+    restart: unless-stopped
+    ports:
+      - "${BUS_VPORT}:15672"
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost", "echo ok"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - network
+    env_file:
+      - ${BUS_PATH}/.env
+    environment:
+      - RABBITMQ_DEFAULT_USER=${BUS_USER}
+      - RABBITMQ_DEFAULT_PASS=${BUS_PASS}
+
+  #####################################################
+  # EXPRESS API GATEWAY
+  #####################################################
+  api:
+    restart: unless-stopped
+    depends_on:
+      - db
+      - bus
+    build:
+      context: ${API_PATH}
+      args:
+        node_version: ${NODEJS_VERSION}
+        nodemon_version: "latest"
+    command: ["sh", "scripts/wait-for.sh", "bus:15672", "yarn", "start:dev"]
+    volumes:
+      - ${API_PATH}/:/usr/src/app
+      - ${ROOT_PATH}/configuration/qa/.eslintrc.yml:/usr/src/app/.eslintrc.yml
+      - ${ROOT_PATH}/configuration/ssl/:/usr/src/app/ssl/
+      - ${ROOT_PATH}/configuration/protos/:/usr/src/app/protos/
+      - ${ROOT_PATH}/scripts/:/usr/src/app/scripts/
+      - /usr/src/app/node_modules
+    expose:
+      - ${API_VPORT}
+      - 5858
+    ports:
+      - "${API_VPORT}"
+      - "5858"
+    networks:
+      - network
+    environment:
+      - VIRTUAL_HOST=${API_VHOST}
+      - VIRTUAL_PORT=${API_VPORT}
+    env_file:
+      - ${ROOT_PATH}/.env
+      - ${API_PATH}/.env
+
+  ##################################################
+  ## Micro-Services
+  ##################################################
+  # gRPC server
+  service-grpc:
+    depends_on:
+      - bus
+    restart: unless-stopped
+    build:
+      context: ${SERVICE_GRPC_PATH}
+      args:
+        node_version: ${NODEJS_VERSION}
+        nodemon_version: "latest"
+    command: ["sh", "scripts/wait-for.sh", "bus:15672", "yarn", "start:dev"]
+    volumes:
+      - ${SERVICE_GRPC_PATH}/:/usr/src/app
+      - ${ROOT_PATH}/configuration/qa/.eslintrc.yml:/usr/src/app/.eslintrc.yml
+      - ${ROOT_PATH}/configuration/ssl/:/usr/src/app/ssl/
+      - ${ROOT_PATH}/configuration/protos/:/usr/src/app/protos/
+      - ${ROOT_PATH}/scripts/:/usr/src/app/scripts/
+      - /usr/src/app/node_modules
+    networks:
+      - network
+    env_file:
+      - ${SERVICE_GRPC_PATH}/.env
+      - ${ROOT_PATH}/.env
+
+  # http server
+  service-http:
+    depends_on:
+      - bus
+    restart: unless-stopped
+    depends_on:
+      - bus
+    build:
+      context: ${SERVICE_HTTP_PATH}
+      args:
+        node_version: ${NODEJS_VERSION}
+        nodemon_version: "latest"
+    command: ["sh", "scripts/wait-for.sh", "bus:15672", "yarn", "start:dev"]
+    volumes:
+      - ${SERVICE_HTTP_PATH}/:/usr/src/app
+      - ${ROOT_PATH}/configuration/qa/.eslintrc.yml:/usr/src/app/.eslintrc.yml
+      - ${ROOT_PATH}/configuration/ssl/:/usr/src/app/ssl/
+      - ${ROOT_PATH}/configuration/protos/:/usr/src/app/protos/
+      - ${ROOT_PATH}/scripts/:/usr/src/app/scripts/
+      - /usr/src/app/node_modules
+    networks:
+      - network
+    env_file:
+      - ${SERVICE_HTTP_PATH}/.env
+      - ${ROOT_PATH}/.env
